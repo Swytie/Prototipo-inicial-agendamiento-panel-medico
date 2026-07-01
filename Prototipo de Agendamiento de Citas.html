@@ -1,0 +1,2515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agendamiento de Consultas Médicas | CHRISTUS MUGUERZA</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{
+  --cm-purple:#6B2D8B;
+  --cm-purple-dark:#4A1E61;
+  --cm-purple-light:#EDE4F3;
+  --cm-purple-mid:#9B5DC0;
+  --cm-gray:#F5F5F5;
+  --cm-border:#D9CCDE;
+  --cm-text:#2C2C2A;
+  --cm-muted:#6B6B6B;
+  --cm-error:#C0392B;
+  --cm-error-bg:#FDEEEC;
+  --cm-success:#1a7a4a;
+  --cm-success-bg:#EAF5EE;
+  --cm-warning:#9c6b00;
+  --cm-warning-bg:#FFF8E1;
+  --cm-white:#ffffff;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#F0EBF5;color:var(--cm-text);}
+.hidden{display:none !important;}
+.wrapper{max-width:1100px;margin:0 auto;padding:0 16px;}
+a{color:var(--cm-purple);text-decoration:none;}
+
+/* Header */
+header.app-header{background:var(--cm-white);border-bottom:3px solid var(--cm-purple);position:sticky;top:0;z-index:50;}
+.header-inner{max-width:1100px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:12px;cursor:pointer;}
+.brand-logo-img{height:42px;width:auto;flex-shrink:0;}
+.brand-text strong{display:block;color:var(--cm-purple-dark);font-size:16px;line-height:1.2;}
+.brand-text span{display:block;color:var(--cm-muted);font-size:12px;}
+nav.top-nav{display:flex;gap:6px;}
+nav.top-nav button{background:none;border:none;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--cm-muted);padding:8px 12px;border-radius:6px;cursor:pointer;}
+nav.top-nav button:hover{background:var(--cm-gray);}
+nav.top-nav button.active{color:var(--cm-purple-dark);background:var(--cm-purple-light);}
+
+.progress-bar-track{height:5px;background:var(--cm-purple-light);}
+.progress-bar-fill{height:5px;background:var(--cm-purple);width:0%;transition:width .25s ease;}
+
+main{padding-bottom:60px;}
+
+/* Hero / Home */
+.hero{padding:32px 0 28px;text-align:center;}
+.hero-banner{background:linear-gradient(135deg,var(--cm-purple-dark),var(--cm-purple) 65%,var(--cm-purple-mid));border-radius:18px;padding:56px 32px;box-shadow:0 14px 34px rgba(74,30,97,.28);}
+.hero-banner h1{color:#fff;font-size:30px;margin:0 0 10px;}
+.hero-banner p{color:rgba(255,255,255,.88);font-size:15.5px;max-width:580px;margin:0 auto 26px;}
+.link-on-dark{color:#fff;font-size:13.5px;font-weight:600;opacity:.95;}
+.link-on-dark:hover{text-decoration:underline;}
+
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:36px;}
+.feature-card{background:var(--cm-white);border:1px solid var(--cm-border);border-radius:10px;padding:22px 18px;text-align:center;transition:transform .15s,box-shadow .15s;}
+.feature-card:hover{transform:translateY(-4px);box-shadow:0 10px 22px rgba(74,30,97,.12);border-color:var(--cm-purple-mid);}
+.icon-circle{width:50px;height:50px;border-radius:50%;background:var(--cm-purple-light);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;}
+.icon-circle i{color:var(--cm-purple);font-size:20px;}
+.icon-circle-sm{width:38px;height:38px;margin:0;flex-shrink:0;}
+.icon-circle-sm i{font-size:16px;}
+.feature-card h4{margin:4px 0 6px;font-size:14.5px;color:var(--cm-purple-dark);}
+.feature-card p{margin:0;font-size:12.5px;color:var(--cm-muted);}
+
+.specialty-section{margin-top:42px;}
+.specialty-title{font-size:13px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--cm-purple-mid);margin-bottom:14px;}
+.specialty-chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+.specialty-chip{background:#fff;border:1px solid var(--cm-border);color:var(--cm-purple-dark);padding:10px 18px;border-radius:24px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:8px;transition:.15s;}
+.specialty-chip i{color:var(--cm-purple-mid);transition:.15s;}
+.specialty-chip:hover{background:var(--cm-purple);color:#fff;border-color:var(--cm-purple);box-shadow:0 6px 14px rgba(107,45,139,.25);}
+.specialty-chip:hover i{color:#fff;}
+
+.support-strip{margin-top:36px;background:var(--cm-purple-light);border-radius:10px;padding:16px 20px;font-size:13.5px;color:var(--cm-purple-dark);text-align:left;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:6px;border:none;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
+.btn-lg{padding:13px 28px;font-size:15px;}
+.btn-primary{background:var(--cm-purple);color:#fff;}
+.btn-primary:hover{background:var(--cm-purple-dark);}
+.btn-secondary{background:#fff;color:var(--cm-purple);border:1px solid var(--cm-purple);}
+.btn-secondary:hover{background:var(--cm-purple-light);}
+.btn-text{background:none;color:var(--cm-muted);padding:10px 6px;}
+.btn-danger-outline{background:#fff;color:var(--cm-error);border:1px solid var(--cm-error);}
+.btn-danger-outline:hover{background:var(--cm-error-bg);}
+.btn-danger{background:var(--cm-error);color:#fff;}
+.btn-danger:hover{background:#a3291c;}
+.btn-on-dark{background:#fff;color:var(--cm-purple-dark);box-shadow:0 6px 16px rgba(0,0,0,.18);}
+.btn-on-dark:hover{background:var(--cm-purple-light);}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.btn-row{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap;}
+.btn-row.split{justify-content:space-between;}
+
+/* Ventana de búsqueda: barra horizontal de filtros + cajón de resultados a la derecha con scroll propio */
+.search-window{display:flex;gap:18px;align-items:flex-start;}
+.search-filters-panel{flex:1;min-width:0;margin-bottom:0;}
+.search-filters-panel .form-row.form-row-3{grid-template-columns:repeat(3,1fr);}
+.search-filters-panel .btn-row.split{justify-content:space-between;}
+#btnVerResultados{margin-right:auto;}
+
+.service-type-tabs{display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid var(--cm-border);}
+.service-tab{background:none;border:none;border-bottom:3px solid transparent;padding:10px 6px;margin-bottom:-1px;font-family:inherit;font-size:13.5px;font-weight:600;color:var(--cm-muted);cursor:pointer;display:inline-flex;align-items:center;gap:7px;}
+.service-tab.active{color:var(--cm-purple-dark);border-bottom-color:var(--cm-purple);}
+.service-tab:hover{color:var(--cm-purple);}
+
+.sede-checks{display:flex;flex-wrap:wrap;gap:8px;align-items:center;max-height:240px;overflow-y:auto;padding:2px;}
+.sede-check-item{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--cm-text);background:#fff;border:1px solid var(--cm-border);border-radius:18px;padding:6px 12px;cursor:pointer;transition:.15s;}
+.sede-check-item:hover{border-color:var(--cm-purple-mid);}
+.sede-check-item input{width:auto;height:auto;margin:0;accent-color:var(--cm-purple);}
+
+.sede-combo{position:relative;}
+.sede-combo-trigger{width:100%;height:36px;border:1px solid var(--cm-border);border-radius:5px;background:#fff;padding:0 10px;font-size:14px;font-family:inherit;color:var(--cm-text);display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+.sede-combo-trigger:hover{border-color:var(--cm-purple-mid);}
+.sede-combo-trigger i{color:var(--cm-muted);font-size:12px;}
+.sede-combo-panel{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid var(--cm-border);border-radius:8px;box-shadow:0 10px 24px rgba(0,0,0,.12);padding:12px;z-index:40;}
+.sede-combo-panel select{margin-bottom:10px;}
+
+.spec-quick-row{display:flex;gap:14px;margin-bottom:24px;overflow-x:auto;padding-bottom:4px;}
+.spec-quick-card{flex:0 0 230px;background:var(--cm-purple-light);border-radius:8px;padding:14px 16px;}
+.spec-quick-title{font-weight:700;color:var(--cm-purple-dark);font-size:12px;letter-spacing:.3px;text-transform:uppercase;margin-bottom:6px;}
+.spec-quick-cupos{font-size:12.5px;color:var(--cm-text);margin-bottom:10px;line-height:1.4;}
+.spec-quick-cupos strong{color:var(--cm-purple-dark);}
+.btn-sm{padding:7px 14px;font-size:12.5px;}
+
+.search-results-panel{flex:0 0 380px;background:#fff;border:1px solid var(--cm-border);border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.05);overflow:hidden;display:flex;flex-direction:column;max-height:640px;position:sticky;top:84px;}
+.search-results-panel.hidden{display:none;}
+.results-panel-header{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,var(--cm-purple-dark),var(--cm-purple));color:#fff;padding:11px 16px;font-weight:600;font-size:13.5px;flex-shrink:0;}
+.panel-close-btn{background:none;border:none;color:#fff;cursor:pointer;font-size:15px;padding:2px 4px;opacity:.9;}
+.panel-close-btn:hover{opacity:1;}
+.results-panel-body{padding:16px;overflow-y:auto;flex:1;min-height:0;}
+
+@media (max-width:980px){
+  .search-window{flex-direction:column;}
+  .search-results-panel{flex:1 1 auto;width:100%;position:static;max-height:480px;}
+  .search-filters-panel .form-row.form-row-3{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width:600px){
+  .search-filters-panel .form-row.form-row-3{grid-template-columns:1fr;}
+}
+
+/* Wizard steps */
+.steps{display:flex;list-style:none;margin:28px 0 8px;padding:0;position:relative;}
+.steps::before{content:'';position:absolute;top:14px;left:6%;right:6%;height:2px;background:var(--cm-border);z-index:0;}
+.step{flex:1;text-align:center;position:relative;z-index:1;font-size:12.5px;color:var(--cm-muted);}
+.step .dot{width:28px;height:28px;border-radius:50%;background:#fff;border:2px solid var(--cm-border);display:flex;align-items:center;justify-content:center;margin:0 auto 6px;font-weight:700;color:var(--cm-muted);font-size:13px;}
+.step.active .dot{border-color:var(--cm-purple);color:var(--cm-purple);box-shadow:0 0 0 3px rgba(107,45,139,0.15);}
+.step.active{color:var(--cm-purple-dark);font-weight:600;}
+.step.complete .dot{background:var(--cm-purple);border-color:var(--cm-purple);color:#fff;}
+
+/* Cards */
+.card{background:var(--cm-white);border:1px solid var(--cm-border);border-radius:8px;margin-bottom:20px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.05);}
+.search-filters-panel.card{overflow:visible;}
+.card-header{background:linear-gradient(90deg,var(--cm-purple-dark),var(--cm-purple));color:#fff;padding:11px 16px;font-weight:600;font-size:14px;border-radius:8px 8px 0 0;}
+.card-body{padding:18px;}
+
+/* Forms */
+label{display:block;font-size:13px;color:var(--cm-muted);margin-bottom:4px;font-weight:600;}
+input,select{width:100%;height:36px;border:1px solid var(--cm-border);border-radius:5px;padding:0 10px;font-size:14px;font-family:inherit;background:#fff;color:var(--cm-text);}
+textarea{width:100%;height:auto;border:1px solid var(--cm-border);border-radius:5px;padding:8px 10px;font-size:14px;font-family:inherit;background:#fff;color:var(--cm-text);resize:vertical;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--cm-purple);box-shadow:0 0 0 3px rgba(107,45,139,.12);}
+.form-row{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.form-group{margin-bottom:14px;}
+.error-text{color:var(--cm-error);font-size:12px;margin-top:4px;display:none;}
+.form-group.has-error input,.form-group.has-error select{border-color:var(--cm-error);}
+.form-group.has-error .error-text{display:block;}
+.checkbox-row{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--cm-text);}
+.checkbox-row input{width:auto;height:auto;margin-top:2px;}
+.field-hint{font-size:12px;color:var(--cm-muted);margin-top:4px;}
+fieldset{border:1px dashed var(--cm-border);border-radius:6px;padding:12px;margin:0 0 14px;}
+fieldset legend{font-size:12.5px;color:var(--cm-purple-dark);font-weight:700;padding:0 6px;}
+.radio-option{display:flex;align-items:center;gap:8px;font-size:13.5px;padding:6px 0;}
+.radio-option input{width:auto;height:auto;}
+.radio-option.disabled{opacity:.55;}
+.pill-note{font-size:11px;background:var(--cm-warning-bg);color:var(--cm-warning);border-radius:20px;padding:2px 9px;margin-left:6px;}
+.convenio-reminder{background:var(--cm-purple-light);color:var(--cm-purple-dark);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:18px;display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;}
+.convenio-warning{display:none;background:var(--cm-error-bg);color:var(--cm-error);border-radius:6px;padding:9px 12px;font-size:12.5px;margin-top:8px;align-items:flex-start;gap:8px;}
+.convenio-warning.show{display:flex;}
+
+/* Help tooltips */
+.help-icon{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;color:var(--cm-purple-mid);cursor:help;position:relative;margin-left:5px;font-size:13px;vertical-align:middle;}
+.help-icon .help-tooltip{visibility:hidden;opacity:0;position:absolute;bottom:135%;left:50%;transform:translateX(-50%);background:var(--cm-purple-dark);color:#fff;font-size:12px;font-weight:400;line-height:1.45;padding:9px 11px;border-radius:6px;width:240px;z-index:30;box-shadow:0 6px 16px rgba(0,0,0,.25);transition:opacity .15s;text-transform:none;}
+.help-icon .help-tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--cm-purple-dark);}
+.help-icon:hover .help-tooltip,.help-icon:focus .help-tooltip{visibility:visible;opacity:1;}
+
+/* Doctor result cards */
+.doctor-card{display:flex;gap:14px;border:1px solid var(--cm-border);border-radius:8px;padding:14px;margin-bottom:12px;background:#fff;align-items:center;cursor:pointer;transition:box-shadow .15s,border-color .15s;}
+.doctor-card:hover{border-color:var(--cm-purple);box-shadow:0 2px 8px rgba(107,45,139,.15);}
+.avatar{width:54px;height:54px;border-radius:50%;background:var(--cm-purple-light);color:var(--cm-purple-dark);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;flex-shrink:0;}
+.doctor-info{flex:1;min-width:0;}
+.doctor-info h4{margin:0 0 2px;color:var(--cm-purple-dark);font-size:15px;}
+.doctor-info .meta{color:var(--cm-muted);font-size:13px;}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:20px;}
+.badge-cupos-ok{background:var(--cm-success-bg);color:var(--cm-success);}
+.badge-cupos-low{background:var(--cm-warning-bg);color:var(--cm-warning);}
+.badge-precio{background:var(--cm-gray);color:var(--cm-purple-dark);}
+.sede-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle;}
+.convenio-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.convenio-badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--cm-gray);color:var(--cm-text);border:1px solid var(--cm-border);}
+.convenio-badge.no-aceptado{background:var(--cm-error-bg);color:var(--cm-error);border-color:var(--cm-error);}
+.results-sort-note{font-size:12.5px;color:var(--cm-muted);margin-bottom:10px;padding-left:2px;}
+.empty-state{text-align:center;padding:48px 24px;color:var(--cm-muted);background:#fff;border:1px dashed var(--cm-border);border-radius:8px;}
+.empty-state i{font-size:32px;margin-bottom:12px;color:var(--cm-purple-mid);display:block;}
+
+/* Directorio de Unidades */
+.unidades-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:8px;}
+.unidad-card{background:#fff;border:1px solid var(--cm-border);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:10px;}
+.unidad-card-header{display:flex;align-items:center;}
+.unidad-card-header h4{margin:0;color:var(--cm-purple-dark);font-size:15px;}
+.unidad-meta{font-size:12.5px;color:var(--cm-muted);}
+.unidad-servicios{display:flex;flex-wrap:wrap;gap:6px;}
+.badge-servicio{background:var(--cm-purple-light);color:var(--cm-purple-dark);font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;}
+.unidad-especialidades{font-size:12.5px;color:var(--cm-text);line-height:1.5;}
+.unidad-especialidades.muted{color:var(--cm-muted);font-style:italic;}
+
+/* Calificación / encuesta de satisfacción */
+.estrellas-selector{display:flex;gap:8px;font-size:28px;margin:6px 0 16px;}
+.estrellas-selector .estrella{color:var(--cm-border);cursor:pointer;transition:color .1s;}
+.estrellas-selector .estrella.activa{color:#F2A93B;}
+.estrellas-readonly{margin-top:8px;font-size:13px;color:#F2A93B;}
+.estrellas-readonly i.vacia{color:var(--cm-border);}
+.comentario-paciente{font-size:12.5px;color:var(--cm-muted);font-style:italic;margin-top:4px;}
+
+/* Day tabs + slots (usado en reprogramar) */
+.day-tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.day-tab{padding:8px 14px;border:1px solid var(--cm-border);border-radius:6px;cursor:pointer;font-size:13px;background:#fff;}
+.day-tab.active{background:var(--cm-purple);color:#fff;border-color:var(--cm-purple);}
+.day-tab.taken{background:var(--cm-gray);color:#b0b0b0;}
+
+/* Calendario multi-semana con color por disponibilidad (selección de médico) */
+.cal-flex{display:flex;gap:26px;align-items:flex-start;}
+.cal-col-calendar{flex:0 0 350px;}
+.cal-col-slots{flex:1;min-width:0;border-left:1px solid var(--cm-border);padding-left:26px;}
+.cal-header{font-weight:700;color:var(--cm-purple-dark);font-size:13.5px;margin-bottom:8px;}
+.cal-legend{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:var(--cm-muted);margin-bottom:12px;}
+.cal-dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle;flex-shrink:0;}
+.nivel-0{background:var(--cm-gray);}
+.nivel-1{background:#E3C7EF;}
+.nivel-2{background:var(--cm-purple-mid);}
+.nivel-3{background:var(--cm-purple-dark);}
+.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;font-size:11px;color:var(--cm-muted);text-align:center;font-weight:700;margin-bottom:6px;}
+.cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
+.cal-cell{height:36px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:12.5px;font-weight:700;cursor:pointer;color:#fff;}
+.cal-cell.empty{visibility:hidden;cursor:default;}
+.cal-cell.nivel-0{color:#b0b0b0;cursor:not-allowed;}
+.cal-cell.nivel-1{color:var(--cm-purple-dark);}
+.cal-cell.selected{outline:3px solid var(--cm-purple);outline-offset:2px;}
+.selected-day-label{font-weight:700;color:var(--cm-purple-dark);font-size:13.5px;margin-bottom:12px;}
+.slots-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:8px;max-height:280px;overflow-y:auto;padding-right:4px;}
+.slot-btn{padding:8px 0;text-align:center;border:1px solid var(--cm-border);border-radius:5px;background:#fff;cursor:pointer;font-size:13px;}
+.slot-btn:hover{border-color:var(--cm-purple);}
+.slot-btn.selected{background:var(--cm-purple);color:#fff;border-color:var(--cm-purple);}
+.slot-btn.taken{background:var(--cm-gray);color:#b9b9b9;cursor:not-allowed;text-decoration:line-through;}
+@media (max-width:680px){
+  .cal-flex{flex-direction:column;}
+  .cal-col-calendar{flex:1 1 auto;width:100%;}
+  .cal-col-slots{border-left:none;padding-left:0;border-top:1px solid var(--cm-border);padding-top:16px;margin-top:4px;width:100%;}
+  .cal-cell{height:32px;font-size:11.5px;}
+  .modal.modal-xl{padding:18px;}
+  .avatar-lg{width:58px;height:58px;font-size:19px;}
+  .medico-modal-header h3{font-size:18px;}
+}
+
+/* Confirmation */
+.success-icon{font-size:46px;color:var(--cm-success);text-align:center;margin-bottom:6px;}
+.confirm-title{text-align:center;color:var(--cm-purple-dark);font-size:20px;margin:0 0 6px;}
+.confirm-sub{text-align:center;color:var(--cm-muted);font-size:13.5px;margin:0 0 18px;}
+.folio-wrap{text-align:center;margin-bottom:18px;}
+.folio-badge{background:var(--cm-purple-light);color:var(--cm-purple-dark);padding:7px 18px;border-radius:20px;font-weight:700;font-size:14px;display:inline-block;letter-spacing:.5px;}
+.summary-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--cm-border);font-size:14px;gap:12px;}
+.summary-row:last-child{border-bottom:none;}
+.summary-row .label{color:var(--cm-muted);flex-shrink:0;}
+.summary-row .value{text-align:right;font-weight:600;}
+.notify-note{background:var(--cm-success-bg);color:var(--cm-success);border-radius:6px;padding:10px 14px;font-size:13px;margin-top:16px;display:flex;gap:8px;align-items:flex-start;}
+
+/* Mis citas */
+.cita-card{display:flex;gap:14px;border:1px solid var(--cm-border);border-left:4px solid var(--cm-success);border-radius:8px;padding:16px;margin-bottom:14px;background:#fff;align-items:flex-start;flex-wrap:wrap;}
+.cita-card.cancelada{border-left-color:#b9b9b9;opacity:.75;}
+.cita-card .cita-main{flex:1;min-width:200px;}
+.cita-card h4{margin:0 0 4px;color:var(--cm-purple-dark);font-size:15px;}
+.cita-card .meta-line{color:var(--cm-muted);font-size:13px;margin:2px 0;}
+.cita-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.status-badge-confirmada{background:var(--cm-success-bg);color:var(--cm-success);}
+.status-badge-cancelada{background:#eee;color:#777;}
+.status-badge-reprogramada{background:var(--cm-warning-bg);color:var(--cm-warning);}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1000;padding:16px;}
+.modal{background:#fff;border-radius:10px;box-shadow:0 20px 40px rgba(0,0,0,.25);max-width:440px;width:100%;padding:22px;max-height:88vh;overflow-y:auto;}
+.modal.modal-wide{max-width:580px;}
+.modal.modal-xl{max-width:780px;padding:28px;}
+.medico-modal-header{display:flex;gap:18px;align-items:center;flex-wrap:wrap;}
+.medico-modal-header h3{margin:0 0 6px;color:var(--cm-purple-dark);font-size:22px;}
+.meta-lg{color:var(--cm-muted);font-size:14.5px;margin:3px 0;}
+.medico-modal-section-title{font-weight:700;color:var(--cm-purple-dark);margin:6px 0 16px;font-size:16px;}
+.avatar-lg{width:72px;height:72px;font-size:24px;flex-shrink:0;}
+.avatar-lg.estudio-icon{font-size:26px;}
+.modal-xl .day-tab{font-size:14.5px;padding:10px 18px;}
+.modal-xl .slot-btn{font-size:13.5px;padding:10px 0;font-weight:600;}
+.estudio-descripcion{color:var(--cm-muted);font-size:13px;margin:10px 0 0;}
+.preparacion-box{background:var(--cm-warning-bg);color:var(--cm-warning);border-radius:8px;padding:12px 14px;font-size:13px;margin:14px 0;display:flex;gap:9px;align-items:flex-start;line-height:1.5;}
+.sede-selector-label{font-weight:600;color:var(--cm-purple-dark);font-size:13px;margin:6px 0 8px;}
+.sede-chips-selector{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
+.sede-chip-btn{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--cm-border);border-radius:18px;padding:7px 13px;font-size:12.5px;font-family:inherit;color:var(--cm-text);cursor:pointer;}
+.sede-chip-btn.active{background:var(--cm-purple-light);border-color:var(--cm-purple);color:var(--cm-purple-dark);font-weight:600;}
+.badge-categoria-laboratorio{background:var(--cm-success-bg);color:var(--cm-success);}
+.badge-categoria-imagen{background:var(--cm-purple-light);color:var(--cm-purple-dark);}
+.modal h3{margin:0 0 10px;color:var(--cm-purple-dark);font-size:17px;}
+.modal p{font-size:14px;color:var(--cm-text);margin:0 0 16px;}
+
+/* Chatbot ayuda */
+.chat-box{display:flex;flex-direction:column;gap:10px;max-height:340px;min-height:200px;overflow-y:auto;background:var(--cm-gray);border:1px solid var(--cm-border);border-radius:8px;padding:14px;margin-bottom:12px;}
+.chat-msg{padding:10px 14px;border-radius:14px;font-size:13.5px;line-height:1.5;max-width:80%;}
+.chat-msg.bot{background:var(--cm-purple-light);color:var(--cm-purple-dark);align-self:flex-start;}
+.chat-msg.user{background:var(--cm-purple);color:#fff;align-self:flex-end;}
+.chat-msg.chat-menu{max-width:100%;width:100%;display:flex;flex-direction:column;gap:7px;}
+.chat-menu-title{font-weight:400;line-height:1.5;margin-bottom:6px;}
+.chat-menu button{width:100%;text-align:left;background:#fff;border:1px solid var(--cm-border);border-radius:6px;padding:9px 12px;font-size:13px;color:var(--cm-purple-dark);cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.chat-menu button:hover{background:var(--cm-purple);color:#fff;border-color:var(--cm-purple);}
+.chat-menu button i{font-size:11px;}
+.chat-input-row{display:flex;gap:8px;margin-bottom:16px;}
+.chat-input-row input{flex:1;height:40px;}
+.chat-input-row button{height:40px;}
+.modal-divider{border-top:1px solid var(--cm-border);margin:14px 0;}
+.contact-line{font-size:13.5px;color:var(--cm-text);display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--cm-purple-dark);color:#fff;padding:11px 20px;border-radius:6px;font-size:13.5px;opacity:0;transition:opacity .25s,transform .25s;z-index:1100;box-shadow:0 4px 14px rgba(0,0,0,.2);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* Help button */
+.help-fab{position:fixed;bottom:22px;right:22px;width:46px;height:46px;border-radius:50%;background:var(--cm-purple);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;border:none;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.25);z-index:900;}
+.help-fab:hover{background:var(--cm-purple-dark);}
+
+footer.app-footer{text-align:center;font-size:11.5px;color:var(--cm-muted);padding:18px 0 30px;}
+
+@media (max-width:680px){
+  .feature-grid{grid-template-columns:1fr;}
+  .form-row{grid-template-columns:1fr;}
+  .doctor-card{flex-wrap:wrap;}
+  .steps::before{left:10%;right:10%;}
+  .step{font-size:11px;}
+  .hero-banner{padding:34px 20px;border-radius:14px;}
+  .hero-banner h1{font-size:23px;}
+  .spec-quick-card{flex:0 0 200px;}
+}
+
+/* Comprobante imprimible: solo se ve la tarjeta de confirmación al imprimir */
+@media print{
+  body *{visibility:hidden;}
+  #step-4, #step-4 *{visibility:visible;}
+  #step-4{position:absolute;left:0;top:0;width:100%;padding:20px;}
+  #step-4 .btn-row{display:none;}
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="brand" onclick="goHome()">
+      <img src="logo.jpg" alt="CHRISTUS MUGUERZA - Sistema de Salud" class="brand-logo-img">
+      <div class="brand-text">
+        <span>Agendamiento de Consultas</span>
+      </div>
+    </div>
+    <nav class="top-nav">
+      <button id="nav-home" class="active" onclick="goHome()"><i class="fa-solid fa-house"></i> Inicio</button>
+      <button id="nav-unidades" onclick="openUnidades()"><i class="fa-solid fa-hospital"></i> Unidades</button>
+      <button id="nav-promociones" onclick="openPromociones()"><i class="fa-solid fa-tags"></i> Promociones</button>
+      <button id="nav-citas" onclick="openMisCitas()"><i class="fa-solid fa-calendar-check"></i> Mis Citas</button>
+    </nav>
+  </div>
+  <div class="progress-bar-track">
+    <div class="progress-bar-fill" id="progressFill"></div>
+  </div>
+</header>
+
+<main class="wrapper">
+
+  <!-- ===================== HOME / ACCESO ===================== -->
+  <section id="page-home" class="page-section">
+    <div class="hero">
+      <div class="hero-banner">
+        <h1>Agenda tu consulta médica en línea</h1>
+        <p>Encuentra al especialista que necesitas, revisa su disponibilidad en tiempo real y reserva tu cita en pocos pasos. No necesitas registrarte para consultar disponibilidad.</p>
+        <button class="btn btn-on-dark btn-lg" onclick="startBooking()"><i class="fa-solid fa-calendar-plus"></i> Agendar Consulta</button>
+        <div style="margin-top:14px;">
+          <a href="#" class="link-on-dark" onclick="openMisCitas();return false;"><i class="fa-solid fa-calendar-check"></i> Ya tengo una cita &mdash; ver mis citas</a>
+        </div>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="icon-circle"><i class="fa-solid fa-bolt"></i></div>
+          <h4>Disponibilidad en tiempo real</h4>
+          <p>Consulta cupos disponibles por médico, especialidad y sede.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon-circle"><i class="fa-solid fa-hospital"></i></div>
+          <h4>Múltiples hospitales</h4>
+          <p>Elige la sede CHRISTUS MUGUERZA más conveniente para ti.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon-circle"><i class="fa-solid fa-envelope-circle-check"></i></div>
+          <h4>Confirmación inmediata</h4>
+          <p>Recibe notificación de tu cita por correo y SMS.</p>
+        </div>
+      </div>
+
+      <div class="specialty-section">
+        <div class="specialty-title">Especialidades populares</div>
+        <div class="specialty-chips">
+          <button class="specialty-chip" onclick="buscarPorEspecialidadRapida('Medicina Familiar')"><i class="fa-solid fa-user-doctor"></i> Medicina Familiar</button>
+          <button class="specialty-chip" onclick="buscarPorEspecialidadRapida('Cardiología')"><i class="fa-solid fa-heart-pulse"></i> Cardiología</button>
+          <button class="specialty-chip" onclick="buscarPorEspecialidadRapida('Pediatría')"><i class="fa-solid fa-child"></i> Pediatría</button>
+          <button class="specialty-chip" onclick="buscarPorEspecialidadRapida('Ginecología y Obstetricia')"><i class="fa-solid fa-venus"></i> Ginecología</button>
+          <button class="specialty-chip" onclick="buscarPorEspecialidadRapida('Dermatología')"><i class="fa-solid fa-hand-dots"></i> Dermatología</button>
+          <button class="specialty-chip" onclick="buscarPorEspecialidadRapida('Ortopedia y Traumatología')"><i class="fa-solid fa-bone"></i> Ortopedia</button>
+        </div>
+      </div>
+
+      <div class="support-strip">
+        <div class="icon-circle icon-circle-sm"><i class="fa-solid fa-headset"></i></div>
+        <div>¿Necesitas ayuda? Asistente Virtual disponible en el portal &nbsp;|&nbsp; Línea de atención: <strong>81 8000 0000</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== WIZARD ===================== -->
+  <section id="page-wizard" class="page-section hidden">
+    <ul class="steps" id="stepsNav">
+      <li class="step" data-step="1"><div class="dot">1</div>Búsqueda</li>
+      <li class="step" data-step="2"><div class="dot">2</div>Selección</li>
+      <li class="step" data-step="3"><div class="dot">3</div>Datos</li>
+      <li class="step" data-step="4"><div class="dot">4</div>Confirmación</li>
+    </ul>
+
+    <!-- Paso 1: Búsqueda -->
+    <div class="wizard-step" id="step-1">
+      <div class="search-window" id="searchWindow">
+      <div class="search-filters-panel card">
+        <div class="card-header"><i class="fa-solid fa-magnifying-glass"></i> Busca tu especialista</div>
+        <div class="card-body">
+          <div class="service-type-tabs">
+            <button type="button" class="service-tab active" id="tabConsulta" onclick="cambiarModoBusqueda('consulta')"><i class="fa-solid fa-user-doctor"></i> Consulta médica</button>
+            <button type="button" class="service-tab" id="tabEstudio" onclick="cambiarModoBusqueda('estudio')"><i class="fa-solid fa-flask"></i> Estudios y exámenes</button>
+          </div>
+          <div id="panelConsulta">
+          <div class="spec-quick-row" id="especialidadesDestacadas"></div>
+          <form id="formBusqueda" onsubmit="buscarMedicos(event)">
+            <div class="form-row form-row-3">
+              <div class="form-group">
+                <label for="f-especialidad">Especialidad</label>
+                <select id="f-especialidad">
+                  <option value="">Todas las especialidades</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="f-nombre">Médico (opcional)</label>
+                <input type="text" id="f-nombre" placeholder="Ej. Garza, Treviño...">
+              </div>
+              <div class="form-group">
+                <label for="f-franja">Disponibilidad
+                  <span class="help-icon" tabindex="0"><i class="fa-solid fa-circle-question"></i>
+                    <span class="help-tooltip">Filtra solo médicos que tengan al menos un horario libre dentro de las próximas 24 o 48 horas.</span>
+                  </span>
+                </label>
+                <select id="f-franja">
+                  <option value="cualquiera">Cualquier fecha</option>
+                  <option value="24h">Próximas 24 horas</option>
+                  <option value="48h">Próximas 48 horas</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Sede / Hospital</label>
+              <div class="sede-combo" id="sedeCombo-consulta">
+                <button type="button" class="sede-combo-trigger" onclick="toggleSedeCombo('consulta')">
+                  <span id="sedeComboLabel-consulta">Todas las sedes</span>
+                  <i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <div class="sede-combo-panel hidden" id="sedeComboPanel-consulta">
+                  <select id="filtroCiudadSede" onchange="filtrarSedeChecksPorCiudad('sedeChecks', this.value)">
+                    <option value="">Todas las ciudades</option>
+                  </select>
+                  <div class="sede-checks" id="sedeChecks"></div>
+                </div>
+              </div>
+            </div>
+
+            <fieldset>
+              <legend>Modalidad de atención
+                <span class="help-icon" tabindex="0"><i class="fa-solid fa-circle-question"></i>
+                  <span class="help-tooltip">La telemedicina está fuera del alcance de este prototipo. Este módulo cubre únicamente consultas presenciales.</span>
+                </span>
+              </legend>
+              <div class="radio-option">
+                <input type="radio" name="modalidad" value="presencial" checked> Consulta presencial
+              </div>
+              <div class="radio-option disabled">
+                <input type="radio" name="modalidad" value="telemedicina" disabled> Telemedicina <span class="pill-note">Deshabilitado &mdash; fuera de alcance</span>
+              </div>
+            </fieldset>
+
+            <div class="btn-row split">
+              <button type="button" class="btn btn-secondary hidden" id="btnVerResultados" onclick="mostrarPanelResultados()"><i class="fa-solid fa-list"></i> Ver resultados</button>
+              <button type="submit" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> Buscar disponibilidad</button>
+            </div>
+          </form>
+          </div>
+
+          <div id="panelEstudio" class="hidden">
+            <form id="formEstudios" onsubmit="buscarEstudios(event)">
+              <div class="form-row form-row-3">
+                <div class="form-group">
+                  <label for="e-categoria">Tipo de estudio</label>
+                  <select id="e-categoria">
+                    <option value="">Todos los estudios</option>
+                    <option value="laboratorio">Laboratorio</option>
+                    <option value="imagen">Imagen</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="e-nombre">Buscar por nombre (opcional)</label>
+                  <input type="text" id="e-nombre" placeholder="Ej. Biometría, Ultrasonido...">
+                </div>
+                <div class="form-group">
+                  <label for="e-franja">Disponibilidad</label>
+                  <select id="e-franja">
+                    <option value="cualquiera">Cualquier fecha</option>
+                    <option value="24h">Próximas 24 horas</option>
+                    <option value="48h">Próximas 48 horas</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Sede / Hospital
+                  <span class="help-icon" tabindex="0"><i class="fa-solid fa-circle-question"></i>
+                    <span class="help-tooltip">No todas las unidades ofrecen estudios de imagen; al buscar solo verás los que apliquen para cada unidad.</span>
+                  </span>
+                </label>
+                <div class="sede-combo" id="sedeCombo-estudios">
+                  <button type="button" class="sede-combo-trigger" onclick="toggleSedeCombo('estudios')">
+                    <span id="sedeComboLabel-estudios">Todas las sedes</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                  </button>
+                  <div class="sede-combo-panel hidden" id="sedeComboPanel-estudios">
+                    <select id="filtroCiudadSedeEstudios" onchange="filtrarSedeChecksPorCiudad('sedeChecksEstudios', this.value)">
+                      <option value="">Todas las ciudades</option>
+                    </select>
+                    <div class="sede-checks" id="sedeChecksEstudios"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="btn-row">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> Buscar estudios disponibles</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="search-results-panel hidden" id="searchResultsPanel">
+        <div class="results-panel-header">
+          <span id="resultsCountLabel">Resultados</span>
+          <button type="button" class="panel-close-btn" onclick="ocultarPanelResultados()" title="Ocultar resultados"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="results-panel-body" id="search-results"></div>
+      </div>
+      </div>
+    </div>
+
+    <!-- Paso 3: Datos -->
+    <div class="wizard-step hidden" id="step-3">
+      <div class="card">
+        <div class="card-header"><i class="fa-solid fa-id-card"></i> Tus datos</div>
+        <div class="card-body">
+          <div class="convenio-reminder" id="convenioReminder"></div>
+          <form id="formDatos" onsubmit="validarDatos(event)" novalidate>
+            <div class="form-group" id="grp-paraQuien">
+              <label>¿Para quién es esta cita?
+                <span class="help-icon" tabindex="0"><i class="fa-solid fa-circle-question"></i>
+                  <span class="help-tooltip">Puedes agendar para ti mismo(a) o para un familiar/dependiente (hijo, padre, esposo(a), etc.). Los datos de identificación que captures abajo deben ser de quien recibirá la atención.</span>
+                </span>
+              </label>
+              <div class="radio-option"><input type="radio" name="paraQuien" value="propio" checked onchange="toggleParaQuien()"> Para mí mismo(a)</div>
+              <div class="radio-option"><input type="radio" name="paraQuien" value="familiar" onchange="toggleParaQuien()"> Para un familiar o dependiente</div>
+            </div>
+
+            <div class="form-row hidden" id="grp-familiarExtra">
+              <div class="form-group">
+                <label for="d-parentesco">Parentesco con el titular</label>
+                <select id="d-parentesco">
+                  <option value="hijo">Hijo/a</option>
+                  <option value="padre">Padre/Madre</option>
+                  <option value="esposo">Esposo/a</option>
+                  <option value="otro">Otro familiar</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group" id="grp-nombre">
+              <label for="d-nombre" id="lbl-nombre">Nombre completo (de quien recibirá la atención)</label>
+              <input type="text" id="d-nombre" placeholder="Nombre y apellidos">
+              <div class="error-text">Ingresa el nombre completo.</div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group" id="grp-fechaNacimiento">
+                <label for="d-fechaNacimiento">Fecha de nacimiento</label>
+                <input type="date" id="d-fechaNacimiento">
+                <div class="error-text">Indica la fecha de nacimiento.</div>
+              </div>
+              <div class="form-group" id="grp-sexo">
+                <label for="d-sexo">Sexo</label>
+                <select id="d-sexo">
+                  <option value="">Selecciona...</option>
+                  <option value="femenino">Femenino</option>
+                  <option value="masculino">Masculino</option>
+                </select>
+                <div class="error-text">Selecciona una opción.</div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group" id="grp-estadoCivil">
+                <label for="d-estadoCivil">Estado civil</label>
+                <select id="d-estadoCivil">
+                  <option value="">Selecciona...</option>
+                  <option value="soltero">Soltero(a)</option>
+                  <option value="casado">Casado(a)</option>
+                  <option value="union_libre">Unión libre</option>
+                  <option value="divorciado">Divorciado(a)</option>
+                  <option value="viudo">Viudo(a)</option>
+                </select>
+                <div class="error-text">Selecciona una opción.</div>
+              </div>
+              <div class="form-group hidden" id="grp-estadoNacimiento">
+                <label for="d-estadoNacimiento">Estado de nacimiento
+                  <span class="help-icon" tabindex="0"><i class="fa-solid fa-circle-question"></i>
+                    <span class="help-tooltip">Esta unidad solicita el estado de nacimiento como dato obligatorio de admisión.</span>
+                  </span>
+                </label>
+                <select id="d-estadoNacimiento">
+                  <option value="">Selecciona...</option>
+                  <option>Aguascalientes</option><option>Baja California</option><option>Baja California Sur</option>
+                  <option>Campeche</option><option>Chiapas</option><option>Chihuahua</option><option>Coahuila</option>
+                  <option>Colima</option><option>Ciudad de México</option><option>Durango</option><option>Guanajuato</option>
+                  <option>Guerrero</option><option>Hidalgo</option><option>Jalisco</option><option>México</option>
+                  <option>Michoacán</option><option>Morelos</option><option>Nayarit</option><option>Nuevo León</option>
+                  <option>Oaxaca</option><option>Puebla</option><option>Querétaro</option><option>Quintana Roo</option>
+                  <option>San Luis Potosí</option><option>Sinaloa</option><option>Sonora</option><option>Tabasco</option>
+                  <option>Tamaulipas</option><option>Tlaxcala</option><option>Veracruz</option><option>Yucatán</option>
+                  <option>Zacatecas</option><option>Extranjero</option>
+                </select>
+                <div class="error-text">Esta unidad requiere tu estado de nacimiento.</div>
+              </div>
+            </div>
+
+            <div class="form-group" id="grp-expediente">
+              <label for="d-expediente">Número de expediente CHRISTUS MUGUERZA
+                <span class="help-icon" tabindex="0"><i class="fa-solid fa-circle-question"></i>
+                  <span class="help-tooltip">Si ya eres paciente y tienes un expediente con nosotros, ingrésalo para vincular tu historial. Si es tu primera vez, déjalo en blanco — lo crearemos automáticamente con tu correo y teléfono.</span>
+                </span>
+              </label>
+              <input type="text" id="d-expediente" placeholder="Opcional — Ej. EXP-2024-00123">
+              <div class="field-hint">Primera vez con nosotros: déjalo en blanco.</div>
+            </div>
+
+            <div class="form-group" style="margin-bottom:6px;">
+              <label class="checkbox-row">
+                <input type="checkbox" id="d-esExtranjero" onchange="toggleExtranjero()">
+                <span>Soy extranjero(a) / No tengo CURP</span>
+              </label>
+            </div>
+
+            <div class="form-row" id="grp-curp-rfc-row">
+              <div class="form-group" id="grp-curp">
+                <label for="d-curp">CURP (opcional)
+                  <span class="help-icon" tabindex="0"><i class="fa-solid fa-circle-question"></i>
+                    <span class="help-tooltip">Clave Única de Registro de Población, 18 caracteres. Dato opcional — si lo capturas debe tener el formato correcto; si no lo tienes a la mano, puedes continuar sin problema.</span>
+                  </span>
+                </label>
+                <input type="text" id="d-curp" placeholder="18 caracteres" maxlength="18" style="text-transform:uppercase;">
+                <div class="error-text">El formato de CURP no es válido (18 caracteres alfanuméricos).</div>
+              </div>
+              <div class="form-group" id="grp-rfc">
+                <label for="d-rfc">RFC (opcional)</label>
+                <input type="text" id="d-rfc" placeholder="12-13 caracteres" maxlength="13" style="text-transform:uppercase;">
+                <div class="error-text">El formato de RFC no es válido.</div>
+              </div>
+            </div>
+
+            <div class="form-row hidden" id="grp-pasaporte-row">
+              <div class="form-group" id="grp-pasaporte">
+                <label for="d-pasaporte">Número de pasaporte u otro documento de identidad
+                  <span class="help-icon" tabindex="0"><i class="fa-solid fa-circle-question"></i>
+                    <span class="help-tooltip">Pasaporte vigente, visa, matrícula consular u otro documento oficial de identidad. Requerido para pacientes extranjeros en lugar del CURP.</span>
+                  </span>
+                </label>
+                <input type="text" id="d-pasaporte" placeholder="Ej. G12345678">
+                <div class="error-text">Este campo es obligatorio para pacientes sin CURP.</div>
+              </div>
+              <div class="form-group" id="grp-paisOrigen">
+                <label for="d-paisOrigen">País de origen</label>
+                <select id="d-paisOrigen">
+                  <option value="">Selecciona...</option>
+                  <option>Estados Unidos</option><option>Canadá</option><option>España</option>
+                  <option>Colombia</option><option>Venezuela</option><option>Argentina</option>
+                  <option>Brasil</option><option>Guatemala</option><option>Honduras</option>
+                  <option>Cuba</option><option>Chile</option><option>Perú</option>
+                  <option>Francia</option><option>Alemania</option><option>Italia</option>
+                  <option>Reino Unido</option><option>Japón</option><option>China</option>
+                  <option>Otro</option>
+                </select>
+                <div class="error-text">Selecciona tu país de origen.</div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group" id="grp-correo">
+                <label for="d-correo">Correo electrónico</label>
+                <input type="email" id="d-correo" placeholder="correo@ejemplo.com" oninput="revisarSocioSiActivo()">
+                <div class="error-text">Ingresa un correo electrónico válido.</div>
+              </div>
+              <div class="form-group" id="grp-telefono">
+                <label for="d-telefono">Teléfono celular</label>
+                <input type="tel" id="d-telefono" placeholder="10 dígitos" oninput="revisarSocioSiActivo()">
+                <div class="error-text">Ingresa un teléfono a 10 dígitos.</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="checkbox-row">
+                <input type="checkbox" id="d-whatsapp" checked>
+                <span><i class="fa-brands fa-whatsapp" style="color:#25D366;"></i> Recibir confirmación y recordatorio también por WhatsApp, al mismo número de teléfono.</span>
+              </label>
+            </div>
+
+            <div class="form-group" id="grp-socioChristus">
+              <label>¿Eres Socio CHRISTUS?
+                <span class="help-icon" tabindex="0"><i class="fa-solid fa-circle-question"></i>
+                  <span class="help-tooltip">Membresía gratuita de CHRISTUS MUGUERZA con precios preferentes. Tu membresía se valida automáticamente con el correo y teléfono que capturas en este formulario — no necesitas recordar ningún número adicional.</span>
+                </span>
+              </label>
+              <div class="radio-option"><input type="radio" name="socioChristus" value="no" checked onchange="toggleSocioChristus()"> No</div>
+              <div class="radio-option"><input type="radio" name="socioChristus" value="si" onchange="toggleSocioChristus()"> Sí</div>
+              <div class="convenio-reminder" id="socioChristusNota">
+                <i class="fa-solid fa-gift"></i> ¿Sabías que puedes registrarte gratis como Socio CHRISTUS y obtener precios preferentes? <a href="#" onclick="showToast('Función de registro disponible próximamente en este prototipo.');return false;">Más información</a>
+              </div>
+              <div class="hidden" id="grp-socioValidacion" style="margin-top:10px;">
+                <div style="background:var(--cm-gray);border:1px solid var(--cm-border);border-radius:6px;padding:9px 14px;font-size:13px;color:var(--cm-muted);margin-bottom:8px;">
+                  <i class="fa-solid fa-circle-info"></i> Validamos tu membresía con el <strong>correo</strong> y <strong>teléfono</strong> que ingresaste arriba. No necesitas un número de membresía adicional.
+                </div>
+                <div id="socioMembresiaResultado" style="font-size:12.5px;"></div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group" id="grp-convenio">
+                <label for="d-convenio">Tipo de convenio / seguro
+                  <span class="help-icon" tabindex="0"><i class="fa-solid fa-circle-question"></i>
+                    <span class="help-tooltip">Indica quién cubrirá el costo: tú mismo (Particular), tu póliza de gastos médicos (Seguro Médico) o el convenio de tu empresa (Convenio Empresarial).</span>
+                  </span>
+                </label>
+                <select id="d-convenio" onchange="toggleConvenioExtra(); validarConvenioMedico();">
+                  <option value="particular">Particular</option>
+                  <option value="seguro">Seguro Médico (Aseguradora)</option>
+                  <option value="empresa">Convenio Empresarial</option>
+                </select>
+                <div class="convenio-warning hidden" id="convenioWarning"></div>
+              </div>
+              <div class="form-group hidden" id="grp-convenioExtra">
+                <label for="d-convenioExtra">
+                  <span id="lbl-convenioExtra">Aseguradora</span>
+                  <span class="help-icon" tabindex="0"><i class="fa-solid fa-circle-question"></i>
+                    <span class="help-tooltip" id="tip-convenioExtra">Selecciona la aseguradora que respalda tu póliza. Lista verificada de aseguradoras con convenio vigente con CHRISTUS MUGUERZA.</span>
+                  </span>
+                </label>
+                <select id="d-aseguradoraSelect" class="hidden" onchange="toggleAseguradoraOtra()"></select>
+                <input type="text" id="d-convenioExtra" placeholder="Nombre de la aseguradora">
+                <div class="error-text">Este campo es obligatorio.</div>
+              </div>
+            </div>
+
+            <fieldset>
+              <legend>Información de salud
+                <span class="help-icon" tabindex="0"><i class="fa-solid fa-circle-question"></i>
+                  <span class="help-tooltip">Esta información ayuda al médico o al personal del estudio a atenderte de forma más segura. Es confidencial.</span>
+                </span>
+              </legend>
+
+              <div class="form-group">
+                <label>¿Tomas algún medicamento actualmente?</label>
+                <div class="radio-option"><input type="radio" name="medicamentos" value="no" checked onchange="toggleSaludDetalle('medicamentos')"> No</div>
+                <div class="radio-option"><input type="radio" name="medicamentos" value="si" onchange="toggleSaludDetalle('medicamentos')"> Sí</div>
+                <div class="form-group hidden" id="grp-medicamentosDetalle">
+                  <input type="text" id="d-medicamentosDetalle" placeholder="¿Cuál(es)? Ej. Metformina 850mg">
+                  <div class="error-text">Indica qué medicamento(s) tomas.</div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>¿Tienes alergias conocidas?</label>
+                <div class="radio-option"><input type="radio" name="alergias" value="no" checked onchange="toggleSaludDetalle('alergias')"> No</div>
+                <div class="radio-option"><input type="radio" name="alergias" value="si" onchange="toggleSaludDetalle('alergias')"> Sí</div>
+                <div class="form-group hidden" id="grp-alergiasDetalle">
+                  <input type="text" id="d-alergiasDetalle" placeholder="¿A qué eres alérgico(a)? Ej. Penicilina">
+                  <div class="error-text">Indica a qué eres alérgico(a).</div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>¿Padeces alguna enfermedad crónica? (diabetes, hipertensión, etc.)</label>
+                <div class="radio-option"><input type="radio" name="cronicas" value="no" checked onchange="toggleSaludDetalle('cronicas')"> No</div>
+                <div class="radio-option"><input type="radio" name="cronicas" value="si" onchange="toggleSaludDetalle('cronicas')"> Sí</div>
+                <div class="form-group hidden" id="grp-cronicasDetalle">
+                  <input type="text" id="d-cronicasDetalle" placeholder="¿Cuál(es)? Ej. Diabetes tipo 2">
+                  <div class="error-text">Indica cuál(es) padecimiento(s) tienes.</div>
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-bottom:0;">
+                <label for="d-motivo">Motivo de la consulta o estudio (opcional)</label>
+                <textarea id="d-motivo" rows="2" placeholder="Describe brevemente el síntoma o la razón de tu visita"></textarea>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Método de pago
+                <span class="help-icon" tabindex="0"><i class="fa-solid fa-circle-question"></i>
+                  <span class="help-tooltip">CHRISTUS MUGUERZA cobra el servicio al momento de agendar en línea. Si tu seguro o convenio cubre el costo total, tu cargo podría ser de $0; el método de pago solo se usará si aplica algún cargo.</span>
+                </span>
+              </legend>
+              <div class="radio-option"><input type="radio" name="metodoPago" value="tarjeta" checked> <i class="fa-solid fa-credit-card"></i>&nbsp; Tarjeta de crédito/débito (VISA / Mastercard)</div>
+              <div class="radio-option"><input type="radio" name="metodoPago" value="spei"> <i class="fa-solid fa-building-columns"></i>&nbsp; Transferencia electrónica (SPEI)</div>
+              <div class="radio-option"><input type="radio" name="metodoPago" value="oxxo"> <i class="fa-solid fa-store"></i>&nbsp; Pago en efectivo (OXXO)</div>
+            </fieldset>
+
+            <div class="form-group" id="grp-aviso">
+              <label class="checkbox-row">
+                <input type="checkbox" id="d-aviso">
+                <span>Acepto el <a href="#" onclick="return false;">Aviso de Privacidad</a> y los términos de la reserva, conforme a la LFPDPPP.</span>
+              </label>
+              <div class="error-text">Debes aceptar el aviso de privacidad para continuar.</div>
+            </div>
+
+            <div class="btn-row split">
+              <button type="button" class="btn btn-text" onclick="volverASeleccion()"><i class="fa-solid fa-arrow-left"></i> Atrás</button>
+              <button type="submit" class="btn btn-primary">Confirmar Cita <i class="fa-solid fa-check"></i></button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paso 4: Confirmación -->
+    <div class="wizard-step hidden" id="step-4">
+      <div class="card">
+        <div class="card-body">
+          <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
+          <h2 class="confirm-title">¡Tu cita ha sido confirmada!</h2>
+          <p class="confirm-sub">Guarda tu folio para futuras referencias.</p>
+          <div class="folio-wrap"><span class="folio-badge" id="folioOut">CM-000000</span></div>
+          <div id="resumenCita"></div>
+          <div id="prepNote"></div>
+          <div class="notify-note" id="notifyNote"></div>
+          <div class="convenio-reminder" style="margin-top:12px;">
+            <i class="fa-solid fa-file-invoice"></i>
+            <div>¿Necesitas factura? Una vez recibido el servicio, solicítala en el <a href="#" onclick="showToast('En producción, este enlace abriría el Portal de Facturación real de CHRISTUS MUGUERZA.');return false;">Portal de Facturación</a> con tu folio <strong id="facturaFolioRef"></strong> y tus datos fiscales (RFC, razón social, uso de CFDI). No se solicita al agendar.</div>
+          </div>
+        </div>
+      </div>
+      <div class="btn-row split">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button type="button" class="btn btn-secondary" onclick="descargarICS()"><i class="fa-solid fa-calendar-plus"></i> Agregar a calendario</button>
+          <button type="button" class="btn btn-secondary" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir comprobante</button>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button type="button" class="btn btn-text" onclick="startBooking()">Agendar otra consulta</button>
+          <button type="button" class="btn btn-primary" onclick="openMisCitas()">Ver mis citas <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== MIS CITAS / MI EXPEDIENTE ===================== -->
+  <section id="page-mis-citas" class="page-section hidden">
+    <div class="btn-row split" style="margin-top:24px;">
+      <h2 style="color:var(--cm-purple-dark);margin:0;font-size:20px;"><i class="fa-solid fa-calendar-check"></i> Mis Citas</h2>
+      <button class="btn btn-primary" onclick="startBooking()"><i class="fa-solid fa-plus"></i> Agendar nueva consulta</button>
+    </div>
+
+    <div class="service-type-tabs">
+      <button type="button" class="service-tab active" id="tabProximas" onclick="cambiarTabCitas('proximas')"><i class="fa-solid fa-calendar-check"></i> Próximas citas</button>
+      <button type="button" class="service-tab" id="tabExpediente" onclick="cambiarTabCitas('expediente')"><i class="fa-solid fa-folder-open"></i> Mi Expediente</button>
+    </div>
+
+    <div id="panelProximas">
+      <div id="citas-list"></div>
+    </div>
+    <div id="panelExpediente" class="hidden">
+      <p style="color:var(--cm-muted);font-size:13px;margin:0 0 16px;">Historial de consultas y estudios realizados.</p>
+      <div id="expediente-list"></div>
+    </div>
+  </section>
+
+  <!-- ===================== UNIDADES ===================== -->
+  <section id="page-unidades" class="page-section hidden">
+    <div style="margin-top:24px;">
+      <h2 style="color:var(--cm-purple-dark);margin:0 0 4px;font-size:20px;"><i class="fa-solid fa-hospital"></i> Nuestras Unidades</h2>
+      <p style="color:var(--cm-muted);font-size:13.5px;margin:0 0 16px;">Muestra representativa de la red CHRISTUS MUGUERZA. Elige una unidad para ver qué especialidades y servicios ofrece.</p>
+      <div class="form-group" style="max-width:320px;">
+        <label for="filtroCiudadUnidades">Filtrar por ciudad</label>
+        <select id="filtroCiudadUnidades" onchange="renderUnidades()">
+          <option value="">Todas las ciudades</option>
+        </select>
+      </div>
+    </div>
+    <div class="unidades-grid" id="unidades-list"></div>
+  </section>
+
+  <!-- ===================== PROMOCIONES ===================== -->
+  <section id="page-promociones" class="page-section hidden">
+    <div style="margin-top:24px;">
+      <h2 style="color:var(--cm-purple-dark);margin:0 0 4px;font-size:20px;"><i class="fa-solid fa-tags"></i> Promociones</h2>
+      <p style="color:var(--cm-muted);font-size:13.5px;margin:0 0 16px;">Precios de referencia tomados del sitio oficial de CHRISTUS MUGUERZA. Confirma vigencia y disponibilidad por unidad antes de agendar.</p>
+      <div class="form-group" style="max-width:320px;">
+        <label for="filtroCiudadPromociones">Filtrar por ciudad</label>
+        <select id="filtroCiudadPromociones" onchange="renderPromociones()">
+          <option value="">Todas las ciudades</option>
+        </select>
+      </div>
+    </div>
+    <div class="unidades-grid" id="promociones-list"></div>
+
+    <div class="card" style="margin-top:10px;">
+      <div class="card-header"><i class="fa-solid fa-baby"></i> Paquetes de Maternidad</div>
+      <div class="card-body">
+        <p style="margin:0 0 14px;color:var(--cm-text);font-size:13.5px;">CHRISTUS MUGUERZA ofrece paquetes de maternidad en varias de sus unidades. El precio varía según el tipo de parto y la unidad elegida.</p>
+        <button type="button" class="btn btn-secondary" onclick="showToast('Contacta a tu unidad más cercana para conocer los paquetes de maternidad disponibles.')"><i class="fa-solid fa-circle-info"></i> Más información</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="app-footer">
+  CHRISTUS MUGUERZA &mdash; Prototipo conceptual de Agendamiento de Consultas Médicas &mdash; Confidencial, uso interno
+  &nbsp;&nbsp;|&nbsp;&nbsp;
+  <a href="panel-medico.html" style="color:var(--cm-purple);font-weight:600;" target="_blank"><i class="fa-solid fa-user-doctor"></i> Acceso Panel Médico</a>
+</footer>
+
+<button class="help-fab" onclick="openHelp()" title="Ayuda"><i class="fa-solid fa-headset"></i></button>
+
+<!-- Modal genérico -->
+<div class="modal-overlay hidden" id="modalOverlay">
+  <div class="modal" id="modalBox"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ DATOS MOCK ============ */
+/* Unidades reales de CHRISTUS MUGUERZA (17 de ~36 unidades, tomadas de christusmuguerza.com.mx).
+   Se priorizaron hospitales y clínicas (mayor relevancia); quedan fuera algunos CAM adicionales
+   en Monterrey (Juventud, Sendero, Plaza Cristal, Periférico, Huinalá) y Hospital Los Cabos
+   (en construcción al momento de esta investigación). */
+const ESPECIALIDADES = [
+  "Medicina Familiar","Cardiología","Pediatría","Ginecología y Obstetricia",
+  "Dermatología","Ortopedia y Traumatología","Endocrinología","Oftalmología",
+  "Cirugía General","Medicina Interna"
+];
+
+/* Precios base nacionales (ilustrativos, no son tarifas reales verificadas salvo donde se indique).
+   El precio final por unidad = precio base x multiplicadorPrecio de la unidad. */
+const PRECIO_BASE_ESPECIALIDAD = {
+  "Medicina Familiar": 600, "Cardiología": 1100, "Pediatría": 700, "Ginecología y Obstetricia": 950,
+  "Dermatología": 850, "Ortopedia y Traumatología": 1000, "Endocrinología": 950, "Oftalmología": 900,
+  "Cirugía General": 1200, "Medicina Interna": 850
+};
+
+/* convenios: tipos de convenio que acepta la unidad en general (mock, ilustrativo).
+   multiplicadorPrecio: factor sobre el precio base nacional, ilustrativo (no son tarifas reales verificadas). */
+const UNIDADES = [
+  { nombre:"Hospital Alta Especialidad (Monterrey)", ciudad:"Monterrey", estado:"Nuevo León", tipo:"Hospital", direccion:"Miguel Hidalgo y Costilla 2525, Obispado, 64060 Monterrey, N.L.", servicios:["consulta","laboratorio","imagenologia"], convenios:["particular","seguro","empresa"], multiplicadorPrecio:1.15 },
+  { nombre:"Hospital San Nicolás (San Nicolás de los Garza)", ciudad:"San Nicolás de los Garza", estado:"Nuevo León", tipo:"Hospital", direccion:"Av. Rómulo Garza 1100, Hacienda los Morales 3er Sector, 66495 San Nicolás de los Garza, N.L.", servicios:["consulta","laboratorio","imagenologia"], convenios:["particular","seguro","empresa"], multiplicadorPrecio:1.0 },
+  { nombre:"Hospital Conchita (Monterrey)", ciudad:"Monterrey", estado:"Nuevo León", tipo:"Hospital", direccion:"15 de Mayo 1822, Nuevo Obispado, 64040 Monterrey, N.L.", servicios:["consulta","laboratorio"], convenios:["particular","seguro"], multiplicadorPrecio:0.9 },
+  { nombre:"Hospital Sur (Monterrey)", ciudad:"Monterrey", estado:"Nuevo León", tipo:"Hospital", direccion:"Carretera Nacional 6501, La Estanzuela, 64988 Monterrey, N.L.", servicios:["consulta","laboratorio","imagenologia"], convenios:["particular","seguro","empresa"], multiplicadorPrecio:1.0 },
+  { nombre:"Hospital Saltillo", ciudad:"Saltillo", estado:"Coahuila", tipo:"Hospital", direccion:"Blvd. Luis Donaldo Colosio s/n, Col. 25, 25204 Saltillo, Coah.", servicios:["consulta","laboratorio","imagenologia"], convenios:["particular","seguro","empresa"], multiplicadorPrecio:1.0 },
+  { nombre:"Hospital Reynosa", ciudad:"Reynosa", estado:"Tamaulipas", tipo:"Hospital", direccion:"Tiburcio Garza Zamora Km 5.5, Rancho Grande, 88610 Reynosa, Tamps.", servicios:["consulta","laboratorio"], convenios:["particular","seguro"], multiplicadorPrecio:0.9 },
+  { nombre:"Hospital Vidriera (Monterrey)", ciudad:"Monterrey", estado:"Nuevo León", tipo:"Hospital", direccion:"Mariano Escobedo #1405, Treviño, 64570 Monterrey, N.L.", servicios:["consulta","laboratorio","imagenologia"], convenios:["particular","seguro","empresa"], multiplicadorPrecio:1.0 },
+  { nombre:"Hospital UPAEP (Puebla)", ciudad:"Puebla", estado:"Puebla", tipo:"Hospital", direccion:"Av. 5 Poniente 715, Centro, 72000 Puebla, Pue.", servicios:["consulta","laboratorio"], convenios:["particular","seguro"], multiplicadorPrecio:0.9 },
+  { nombre:"Hospital Faro del Mayab (Mérida)", ciudad:"Mérida", estado:"Yucatán", tipo:"Hospital", direccion:"Calle 24 S/N, Temozón Norte, 97305 Mérida, Yuc.", servicios:["consulta","laboratorio","imagenologia"], convenios:["particular","seguro","empresa"], multiplicadorPrecio:1.0 },
+  { nombre:"Clínica San Pedro (San Pedro Garza García)", ciudad:"San Pedro Garza García", estado:"Nuevo León", tipo:"Clínica", direccion:"Calz. San Pedro #325, Col. del Valle, 66220 San Pedro Garza García, N.L.", servicios:["consulta","laboratorio"], convenios:["particular","seguro"], multiplicadorPrecio:0.8 },
+  { nombre:"CAM Cumbres Leones (Monterrey)", ciudad:"Monterrey", estado:"Nuevo León", tipo:"Centro de Medicina Ambulatoria", direccion:"Av. Paseo de los Leones 2215, Cumbres 2do. Sector, 64610 Monterrey, N.L.", servicios:["consulta","laboratorio"], convenios:["particular","seguro"], multiplicadorPrecio:0.8 },
+  { nombre:"CAM Santa Catarina", ciudad:"Santa Catarina", estado:"Nuevo León", tipo:"Centro de Medicina Ambulatoria", direccion:"Av. 2 de Octubre 108, Los Treviño, 66150 Santa Catarina, N.L.", servicios:["consulta","laboratorio"], convenios:["particular","seguro"], multiplicadorPrecio:0.8 },
+  { nombre:"Hospital del Parque (Chihuahua)", ciudad:"Chihuahua", estado:"Chihuahua", tipo:"Hospital", direccion:"Dr. Pedro Leal #1802, Zona Centro, 31000 Chihuahua, Chih.", servicios:["consulta","laboratorio","imagenologia"], convenios:["particular","seguro","empresa"], multiplicadorPrecio:1.0 },
+  { nombre:"Hospital Cumbres (Monterrey)", ciudad:"Monterrey", estado:"Nuevo León", tipo:"Hospital", direccion:"Av. Paseo de los Leones #8001, Valle de Cumbres, 66035 Monterrey, N.L.", servicios:["consulta","laboratorio","imagenologia"], convenios:["particular","seguro","empresa"], multiplicadorPrecio:1.0 },
+  { nombre:"Hospital Betania (Puebla)", ciudad:"Puebla", estado:"Puebla", tipo:"Hospital", direccion:"Av. 11 Oriente 1826, Azcárate, 72501 Puebla, Pue.", servicios:["consulta","laboratorio"], convenios:["particular","seguro"], multiplicadorPrecio:0.9 },
+  { nombre:"Hospital Altagracia (León)", ciudad:"León", estado:"Guanajuato", tipo:"Hospital", direccion:"Blvd. Jorge Vértiz Campero 761, Cañada de Alfaro, 37238 León, Gto.", servicios:["consulta","laboratorio","imagenologia"], convenios:["particular","seguro","empresa"], multiplicadorPrecio:1.0 },
+  { nombre:"Clínica Irapuato", ciudad:"Irapuato", estado:"Guanajuato", tipo:"Clínica", direccion:"Av. Murano 248, Las Heras 2da Secc, 36640 Irapuato, Gto.", servicios:["consulta","laboratorio"], convenios:["particular","seguro"], multiplicadorPrecio:0.8 }
+];
+
+const SEDES = UNIDADES.map(u => u.nombre);
+
+const SEDE_COLORS = {
+  "Hospital Alta Especialidad (Monterrey)": "#6B2D8B",
+  "Hospital San Nicolás (San Nicolás de los Garza)": "#9B5DC0",
+  "Hospital Conchita (Monterrey)": "#D98C3D",
+  "Hospital Sur (Monterrey)": "#2E8B7A",
+  "Hospital Saltillo": "#3D6FD9",
+  "Hospital Reynosa": "#C0539E",
+  "Hospital Vidriera (Monterrey)": "#5C8A3D",
+  "Hospital UPAEP (Puebla)": "#B8762E",
+  "Hospital Faro del Mayab (Mérida)": "#4A6FA5",
+  "Clínica San Pedro (San Pedro Garza García)": "#8B3D5C",
+  "CAM Cumbres Leones (Monterrey)": "#3D9B8A",
+  "CAM Santa Catarina": "#7A4DB8",
+  "Hospital del Parque (Chihuahua)": "#9C6B30",
+  "Hospital Cumbres (Monterrey)": "#5B8AC4",
+  "Hospital Betania (Puebla)": "#A04A7A",
+  "Hospital Altagracia (León)": "#4F9D6E",
+  "Clínica Irapuato": "#8A6FB0"
+};
+
+const CONVENIO_NOMBRES = { particular: "Particular", seguro: "Seguro Médico", empresa: "Convenio Empresarial" };
+
+/* Aseguradoras reales con convenio vigente, tomadas de christusmuguerza.com.mx/asegurados/ */
+const ASEGURADORAS_REALES = [
+  "A.N.A. Compañía de Seguros","AIG Seguros","Allianz México","AXA Assistance","AXA Salud","AXA Seguros",
+  "BBVA Bancomer","Bupa México","Chubb Seguros","Cigna","General de Salud","General de Seguros",
+  "GNP","HDI Seguros","HIR Seguros","Mapfre México","MetLife","Pan-American","Qualitas",
+  "Seguros Afirme","Seguros Atlas","Seguros Banorte","Seguros El Potosí","Seguros Inbursa",
+  "Seguros MTY","Seguros Sura","Thona Seguros","Zurich Vida","El Águila Seguros","Vitamédica"
+];
+
+const DOCTORS = [
+  {id:1, nombre:"Dra. Patricia Hinojosa Treviño", especialidad:"Medicina Familiar", sede:"Hospital Alta Especialidad (Monterrey)", cupos24:8, cupos48:15, convenios:["particular","seguro","empresa"]},
+  {id:2, nombre:"Dr. Ricardo Salinas Cantú", especialidad:"Medicina Familiar", sede:"CAM Santa Catarina", cupos24:0, cupos48:6, convenios:["particular","empresa"]},
+  {id:3, nombre:"Dra. Mariana Elizondo Garza", especialidad:"Cardiología", sede:"Hospital Alta Especialidad (Monterrey)", cupos24:3, cupos48:9, convenios:["particular","seguro"]},
+  {id:4, nombre:"Dr. Eduardo Villarreal Cantú", especialidad:"Cardiología", sede:"Hospital Saltillo", cupos24:0, cupos48:4, convenios:["particular"]},
+  {id:5, nombre:"Dra. Sofía Garza Longoria", especialidad:"Pediatría", sede:"Hospital Conchita (Monterrey)", cupos24:12, cupos48:20, convenios:["particular","seguro","empresa"]},
+  {id:6, nombre:"Dr. Jorge Treviño Ramos", especialidad:"Pediatría", sede:"Hospital Reynosa", cupos24:5, cupos48:11, convenios:["particular","seguro"]},
+  {id:7, nombre:"Dra. Carolina Reyes Benavides", especialidad:"Ginecología y Obstetricia", sede:"Hospital Sur (Monterrey)", cupos24:2, cupos48:7, convenios:["particular","empresa"]},
+  {id:8, nombre:"Dr. Alberto Quintanilla Flores", especialidad:"Dermatología", sede:"Hospital Alta Especialidad (Monterrey)", cupos24:6, cupos48:10, convenios:["particular","seguro"]},
+  {id:9, nombre:"Dra. Lucía Montemayor Cárdenas", especialidad:"Ortopedia y Traumatología", sede:"Hospital Saltillo", cupos24:0, cupos48:3, convenios:["particular"]},
+  {id:10, nombre:"Dr. Fernando García Salinas", especialidad:"Endocrinología", sede:"Hospital Conchita (Monterrey)", cupos24:4, cupos48:9, convenios:["particular","seguro","empresa"]},
+  {id:11, nombre:"Dra. Daniela Cantú Morales", especialidad:"Oftalmología", sede:"Hospital Reynosa", cupos24:7, cupos48:13, convenios:["particular","seguro"]},
+  {id:12, nombre:"Dr. Hugo Benavides Treviño", especialidad:"Medicina Familiar", sede:"Hospital Sur (Monterrey)", cupos24:9, cupos48:16, convenios:["particular","seguro","empresa"]},
+  {id:13, nombre:"Dra. Alejandra Ríos Domínguez", especialidad:"Cirugía General", sede:"Hospital Vidriera (Monterrey)", cupos24:4, cupos48:9, convenios:["particular","seguro"]},
+  {id:14, nombre:"Dr. Manuel Cantú Saldaña", especialidad:"Medicina Interna", sede:"Hospital UPAEP (Puebla)", cupos24:6, cupos48:13, convenios:["particular","seguro","empresa"]},
+  {id:15, nombre:"Dra. Renata Solís Pech", especialidad:"Ginecología y Obstetricia", sede:"Hospital Faro del Mayab (Mérida)", cupos24:3, cupos48:8, convenios:["particular","empresa"]},
+  {id:16, nombre:"Dr. Joaquín Pérez Lara", especialidad:"Medicina Familiar", sede:"Clínica San Pedro (San Pedro Garza García)", cupos24:7, cupos48:14, convenios:["particular"]},
+  {id:17, nombre:"Dra. Karla Mendoza Ibarra", especialidad:"Pediatría", sede:"CAM Cumbres Leones (Monterrey)", cupos24:9, cupos48:16, convenios:["particular","seguro"]},
+  {id:18, nombre:"Dr. Sergio Villanueva Ortiz", especialidad:"Medicina Interna", sede:"Hospital San Nicolás (San Nicolás de los Garza)", cupos24:5, cupos48:10, convenios:["particular","seguro","empresa"]},
+  {id:19, nombre:"Dra. Verónica Holguín Páez", especialidad:"Pediatría", sede:"Hospital del Parque (Chihuahua)", cupos24:6, cupos48:12, convenios:["particular","seguro"]},
+  {id:20, nombre:"Dr. Raúl Ibarra Cantú", especialidad:"Cardiología", sede:"Hospital Cumbres (Monterrey)", cupos24:5, cupos48:10, convenios:["particular","seguro","empresa"]},
+  {id:21, nombre:"Dra. Itzel Romero Vázquez", especialidad:"Ginecología y Obstetricia", sede:"Hospital Betania (Puebla)", cupos24:4, cupos48:9, convenios:["particular","seguro"]},
+  {id:22, nombre:"Dr. Octavio Mendizábal Ruiz", especialidad:"Medicina Familiar", sede:"Hospital Altagracia (León)", cupos24:8, cupos48:15, convenios:["particular","empresa"]},
+  {id:23, nombre:"Dra. Fernanda Aguilar Solano", especialidad:"Dermatología", sede:"Clínica Irapuato", cupos24:5, cupos48:11, convenios:["particular"]}
+];
+
+/* Catálogo de estudios clínicos (laboratorio e imagen). Nombres y preparación genéricos, representativos
+   de los servicios reales de Laboratorio e Imagenología que ofrece CHRISTUS MUGUERZA. */
+const ESTUDIOS = [
+  {id:1, nombre:"Biometría Hemática Completa", categoria:"laboratorio", descripcion:"Mide los componentes de la sangre: glóbulos rojos, blancos y plaquetas.", preparacion:"No requiere ayuno. Puedes desayunar con normalidad.", cupos24:14, cupos48:22, convenios:["particular","seguro","empresa"], precioBase:280},
+  {id:2, nombre:"Química Sanguínea de 27 Elementos", categoria:"laboratorio", descripcion:"Evalúa glucosa, función renal, hepática y otros parámetros metabólicos.", preparacion:"Ayuno estricto de 8 a 10 horas. Solo se permite tomar agua.", cupos24:10, cupos48:18, convenios:["particular","seguro","empresa"], precioBase:480},
+  {id:3, nombre:"Perfil de Lípidos", categoria:"laboratorio", descripcion:"Mide colesterol total, HDL, LDL y triglicéridos.", preparacion:"Ayuno de 12 horas. Evita alimentos grasosos el día anterior.", cupos24:8, cupos48:15, convenios:["particular","seguro"], precioBase:350},
+  {id:4, nombre:"Examen General de Orina", categoria:"laboratorio", descripcion:"Análisis físico, químico y microscópico de orina.", preparacion:"No requiere ayuno. Recolectar la primera orina de la mañana si es posible.", cupos24:16, cupos48:24, convenios:["particular","seguro","empresa"], precioBase:190},
+  {id:5, nombre:"Perfil Tiroideo (T3, T4, TSH)", categoria:"laboratorio", descripcion:"Evalúa el funcionamiento de la glándula tiroides.", preparacion:"No requiere ayuno. Evita suplementos con biotina 48 horas antes.", cupos24:6, cupos48:12, convenios:["particular","seguro"], precioBase:690},
+  {id:6, nombre:"Antígeno Prostático (PSA)", categoria:"laboratorio", descripcion:"Detección y seguimiento de salud prostática.", preparacion:"Evita actividad sexual 48 horas antes del estudio. No requiere ayuno.", cupos24:5, cupos48:9, convenios:["particular"], precioBase:430},
+  {id:7, nombre:"Radiografía de Tórax", categoria:"imagen", descripcion:"Imagen de pulmones, corazón y estructuras óseas del tórax.", preparacion:"No requiere preparación especial. Retira objetos metálicos antes del estudio.", cupos24:9, cupos48:16, convenios:["particular","seguro","empresa"], precioBase:1491},
+  {id:8, nombre:"Ultrasonido Abdominal", categoria:"imagen", descripcion:"Evaluación de hígado, vesícula, riñones y otros órganos abdominales.", preparacion:"Ayuno de 6 a 8 horas. Acude con la vejiga llena (no orinar 1 hora antes).", cupos24:4, cupos48:8, convenios:["particular","seguro"], precioBase:850},
+  {id:9, nombre:"Mastografía", categoria:"imagen", descripcion:"Estudio de detección y seguimiento de salud mamaria.", preparacion:"Si aún menstrúas, agenda dentro de los primeros 10 días de tu ciclo. No usar desodorante el día del estudio.", cupos24:3, cupos48:7, convenios:["particular","seguro","empresa"], precioBase:780},
+  {id:10, nombre:"Electrocardiograma", categoria:"imagen", descripcion:"Registro de la actividad eléctrica del corazón.", preparacion:"No requiere ayuno. Evita ejercicio intenso 30 minutos antes del estudio.", cupos24:11, cupos48:19, convenios:["particular","seguro","empresa"], precioBase:360}
+];
+
+/* Promociones reales tomadas de christusmuguerza.com.mx/pagina-de-ofertas/ (precios de Rayos X,
+   vigencia original consultada: 1 mar - 31 may 2026; verificar vigencia actual antes de usar en producción).
+   estudioId enlaza con el catálogo de ESTUDIOS cuando aplica, para poder agendarlo directo. */
+const PROMOCIONES = [
+  {nombre:"Rayos X de Tórax (3 posiciones)", precioOferta:969, precioRegular:1491, estudioId:7},
+  {nombre:"Rayos X de Tórax (4 posiciones)", precioOferta:2483, precioRegular:3819, estudioId:null},
+  {nombre:"Rayos X de Tórax Óseo (3 posiciones)", precioOferta:969, precioRegular:1491, estudioId:null},
+  {nombre:"Rayos X de Pie (3 posiciones)", precioOferta:1502, precioRegular:2310, estudioId:null},
+  {nombre:"Rayos X de Tobillo (4 posiciones)", precioOferta:1090, precioRegular:1677, estudioId:null},
+  {nombre:"Rayos X Waters (senos paranasales)", precioOferta:1032, precioRegular:1588, estudioId:null},
+  {nombre:"Rayos X Fistulografía", precioOferta:1938, precioRegular:2982, estudioId:null},
+  {nombre:"Rayos X Tránsito Intestinal", precioOferta:1938, precioRegular:2982, estudioId:null}
+];
+
+/* Historial mock para "Mi Expediente" (visitas/estudios anteriores a esta sesión) */
+const HISTORIAL_MOCK = [
+  {folio:"CM-2025-4318", tipo:"estudio", nombre:"Biometría Hemática Completa", categoria:"laboratorio", sede:"Hospital Conchita (Monterrey)", fecha:"02 Abr 2025", resultadoDisponible:true, calificacion:5, comentario:"Atención rápida, sin espera."},
+  {folio:"CM-2025-1187", tipo:"consulta", nombre:"Dra. Mariana Elizondo Garza", especialidad:"Cardiología", sede:"Hospital Alta Especialidad (Monterrey)", fecha:"30 Nov 2025", resultadoDisponible:false, calificacion:null, comentario:null},
+  {folio:"CM-2025-6894", tipo:"estudio", nombre:"Radiografía de Tórax", categoria:"imagen", sede:"Hospital Sur (Monterrey)", fecha:"18 May 2025", resultadoDisponible:true, calificacion:null, comentario:null},
+  {folio:"CM-2024-9021", tipo:"consulta", nombre:"Dra. Patricia Hinojosa Treviño", especialidad:"Medicina Familiar", sede:"Hospital Alta Especialidad (Monterrey)", fecha:"12 Mar 2024", resultadoDisponible:false, calificacion:null, comentario:null}
+];
+
+const HORAS = ["08:00","08:30","09:00","09:30","10:00","10:30","11:00","11:30","12:00","13:00","13:30","16:00","16:30","17:00","17:30","18:00"];
+const DIAS_SEMANA = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+const MESES = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+
+/* ============ ESTADO ============ */
+let booking = {};
+let currentDoctor = null;
+let currentDayIndex = 0;
+let citas = [];
+let citaCounter = 0;
+let modalContext = null;
+let currentStepNum = 1;
+let searchMode = 'consulta';
+let currentEstudio = null;
+let currentEstudioSede = null;
+
+/* ============ UTILIDADES ============ */
+function mulberry32(seed){
+  return function(){
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function formatDia(offset){
+  const d = new Date();
+  d.setDate(d.getDate() + offset);
+  const diaSemana = d.getDay();
+  const etiqueta = offset === 0 ? "Hoy" : (offset === 1 ? "Mañana" : DIAS_SEMANA[diaSemana]);
+  return {
+    diaSemana: diaSemana,
+    diaMes: d.getDate(),
+    mes: d.getMonth(),
+    label: etiqueta + ", " + d.getDate() + " " + MESES[d.getMonth()],
+    offset: offset
+  };
+}
+
+const DIAS_CALENDARIO = 28;
+
+function generarHorarios(doctorId){
+  const dias = [];
+  for(let i=0;i<DIAS_CALENDARIO;i++){
+    const info = formatDia(i);
+    const rand = mulberry32(doctorId*1000 + i*37);
+    const esFinde = info.diaSemana === 0 || info.diaSemana === 6;
+    let nivel = 0;
+    if(!esFinde){
+      const r = rand();
+      nivel = r < 0.15 ? 0 : (r < 0.45 ? 1 : (r < 0.75 ? 2 : 3));
+    }
+    const probLibre = nivel === 1 ? 0.25 : (nivel === 2 ? 0.5 : (nivel === 3 ? 0.78 : 0));
+    const slots = HORAS.map(h => ({ hora: h, taken: nivel === 0 ? true : rand() >= probLibre }));
+    dias.push({ dia: info, nivel: nivel, slots: slots });
+  }
+  return dias;
+}
+
+function initials(nombre){
+  const parts = nombre.replace(/^(Dr\.|Dra\.)\s*/,'').split(' ').filter(Boolean);
+  return ((parts[0]||'')[0] + (parts[1]||'')[0]).toUpperCase();
+}
+
+function sedeDot(sede){
+  const color = SEDE_COLORS[sede] || 'var(--cm-muted)';
+  return '<span class="sede-dot" style="background:' + color + ';"></span>';
+}
+
+function obtenerUnidad(sede){
+  return UNIDADES.find(u => u.nombre === sede);
+}
+
+function formatoMXN(monto){
+  return '$' + Math.round(monto).toLocaleString('es-MX');
+}
+
+function precioConsultaEnUnidad(especialidad, sede){
+  const base = PRECIO_BASE_ESPECIALIDAD[especialidad] || 800;
+  const unidad = obtenerUnidad(sede);
+  return Math.round(base * (unidad ? unidad.multiplicadorPrecio : 1));
+}
+
+function precioEstudioEnUnidad(estudioId, sede){
+  const estudio = ESTUDIOS.find(e => e.id === estudioId);
+  const unidad = obtenerUnidad(sede);
+  return Math.round(estudio.precioBase * (unidad ? unidad.multiplicadorPrecio : 1));
+}
+
+function renderConvenioBadges(doctor){
+  return '<div class="convenio-badges">' +
+    doctor.convenios.map(c => '<span class="convenio-badge">' + CONVENIO_NOMBRES[c] + '</span>').join('') +
+  '</div>';
+}
+
+function generarFolio(){
+  citaCounter++;
+  return "CM-" + new Date().getFullYear() + "-" + String(1000 + citaCounter * 7 + Math.floor(Math.random()*89));
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=> t.classList.remove('show'), 2600);
+}
+
+/* ============ NAVEGACIÓN DE PÁGINAS ============ */
+function showPage(id){
+  document.querySelectorAll('.page-section').forEach(p => p.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  document.getElementById('nav-home').classList.toggle('active', id === 'page-home' || id === 'page-wizard');
+  document.getElementById('nav-unidades').classList.toggle('active', id === 'page-unidades');
+  document.getElementById('nav-promociones').classList.toggle('active', id === 'page-promociones');
+  document.getElementById('nav-citas').classList.toggle('active', id === 'page-mis-citas');
+  document.getElementById('progressFill').style.width = (id === 'page-wizard') ? document.getElementById('progressFill').style.width : '0%';
+  window.scrollTo(0,0);
+}
+
+function goHome(){
+  showPage('page-home');
+}
+
+function openMisCitas(){
+  showPage('page-mis-citas');
+  cambiarTabCitas('proximas');
+  renderCitas();
+}
+
+function openUnidades(){
+  showPage('page-unidades');
+  poblarFiltroCiudadUnidades();
+  renderUnidades();
+}
+
+function poblarFiltroCiudadUnidades(){
+  const sel = document.getElementById('filtroCiudadUnidades');
+  if(sel.options.length > 1) return;
+  const ciudades = [...new Set(UNIDADES.map(u => u.ciudad))].sort((a, b) => a.localeCompare(b));
+  ciudades.forEach(c => {
+    const o = document.createElement('option'); o.value = c; o.textContent = c;
+    sel.appendChild(o);
+  });
+}
+
+function renderUnidades(){
+  const SERVICIO_LABEL = { consulta:'Consulta médica', laboratorio:'Laboratorio', imagenologia:'Imagenología' };
+  const ciudadFiltro = document.getElementById('filtroCiudadUnidades').value;
+  const lista = ciudadFiltro ? UNIDADES.filter(u => u.ciudad === ciudadFiltro) : UNIDADES;
+
+  if(lista.length === 0){
+    document.getElementById('unidades-list').innerHTML = '<div class="empty-state"><i class="fa-solid fa-location-dot"></i><div>No encontramos unidades en esta ciudad.</div></div>';
+    return;
+  }
+
+  document.getElementById('unidades-list').innerHTML = lista.map(u => {
+    const especialidadesAqui = [...new Set(DOCTORS.filter(d => d.sede === u.nombre).map(d => d.especialidad))];
+    return '<div class="unidad-card">' +
+      '<div class="unidad-card-header">' + sedeDot(u.nombre) + '<h4>' + u.nombre + '</h4></div>' +
+      '<div class="unidad-meta"><i class="fa-solid fa-location-dot"></i> ' + u.ciudad + ', ' + u.estado + ' &middot; ' + u.tipo + '</div>' +
+      '<div class="unidad-meta">' + u.direccion + '</div>' +
+      '<div class="unidad-servicios">' + u.servicios.map(s => '<span class="badge badge-servicio">' + SERVICIO_LABEL[s] + '</span>').join('') + '</div>' +
+      '<div class="convenio-badges">' + u.convenios.map(c => '<span class="convenio-badge">' + CONVENIO_NOMBRES[c] + '</span>').join('') + '</div>' +
+      (especialidadesAqui.length
+        ? '<div class="unidad-especialidades"><strong>Especialidades:</strong> ' + especialidadesAqui.join(', ') + '</div>'
+        : '<div class="unidad-especialidades muted">Sin médicos registrados en este prototipo para esta unidad</div>') +
+      '<button type="button" class="btn btn-secondary btn-sm" onclick="verMedicosDeUnidad(\'' + u.nombre.replace(/'/g, "\\'") + '\')">Ver médicos en esta unidad</button>' +
+    '</div>';
+  }).join('');
+}
+
+function verMedicosDeUnidad(sede){
+  startBooking();
+  const checkbox = Array.from(document.querySelectorAll('#sedeChecks input')).find(el => el.value === sede);
+  if(checkbox) checkbox.checked = true;
+  buscarMedicos({ preventDefault: function(){} });
+}
+
+function openPromociones(){
+  showPage('page-promociones');
+  poblarFiltroCiudadPromociones();
+  renderPromociones();
+}
+
+function poblarFiltroCiudadPromociones(){
+  const sel = document.getElementById('filtroCiudadPromociones');
+  if(sel.options.length > 1) return;
+  const ciudadesConImagen = [...new Set(UNIDADES.filter(u => u.servicios.includes('imagenologia')).map(u => u.ciudad))].sort((a, b) => a.localeCompare(b));
+  ciudadesConImagen.forEach(c => {
+    const o = document.createElement('option'); o.value = c; o.textContent = c;
+    sel.appendChild(o);
+  });
+}
+
+/* Las promociones de Rayos X aplican en las unidades que ofrecen Imagenología (mock de cobertura;
+   el sitio oficial no especifica sede por promoción). */
+function sedesAplicaPromocion(){
+  return UNIDADES.filter(u => u.servicios.includes('imagenologia'));
+}
+
+function renderPromociones(){
+  const ciudadFiltro = document.getElementById('filtroCiudadPromociones').value;
+  const unidadesAplicables = sedesAplicaPromocion().filter(u => !ciudadFiltro || u.ciudad === ciudadFiltro);
+
+  if(unidadesAplicables.length === 0){
+    document.getElementById('promociones-list').innerHTML = '<div class="empty-state"><i class="fa-solid fa-tags"></i><div>No hay unidades con Imagenología en esta ciudad.</div></div>';
+    return;
+  }
+
+  document.getElementById('promociones-list').innerHTML = PROMOCIONES.map(p => {
+    const ahorro = Math.round((1 - p.precioOferta / p.precioRegular) * 100);
+    const boton = p.estudioId
+      ? '<button type="button" class="btn btn-secondary btn-sm" onclick="agendarPromocion(' + p.estudioId + ')">Agendar este estudio</button>'
+      : '<div class="field-hint">Pregunta por este estudio al elegir Estudios de Imagen.</div>';
+    return '<div class="unidad-card">' +
+      '<div class="unidad-card-header"><h4>' + p.nombre + '</h4></div>' +
+      '<div style="display:flex;align-items:baseline;gap:10px;">' +
+        '<span style="font-size:20px;font-weight:700;color:var(--cm-purple-dark);">$' + p.precioOferta.toLocaleString('es-MX') + '</span>' +
+        '<span style="text-decoration:line-through;color:var(--cm-muted);font-size:13px;">$' + p.precioRegular.toLocaleString('es-MX') + '</span>' +
+        '<span class="badge badge-cupos-ok">Ahorra ' + ahorro + '%</span>' +
+      '</div>' +
+      '<div class="unidad-meta"><i class="fa-solid fa-hospital"></i> Disponible en ' + unidadesAplicables.length + ' unidad(es) con Imagenología' + (ciudadFiltro ? ' en ' + ciudadFiltro : '') + '</div>' +
+      boton +
+    '</div>';
+  }).join('');
+}
+
+function agendarPromocion(estudioId){
+  startBooking();
+  cambiarModoBusqueda('estudio');
+  document.getElementById('e-nombre').value = ESTUDIOS.find(e => e.id === estudioId).nombre;
+  buscarEstudios({ preventDefault: function(){} });
+}
+
+function buscarPorEspecialidadRapida(especialidad){
+  startBooking();
+  document.getElementById('f-especialidad').value = especialidad;
+  buscarMedicos({ preventDefault: function(){} });
+}
+
+/* ============ WIZARD ============ */
+function startBooking(){
+  booking = {};
+  currentDoctor = null;
+  currentEstudio = null;
+  currentEstudioSede = null;
+  document.getElementById('formBusqueda').reset();
+  document.getElementById('formEstudios').reset();
+  document.getElementById('search-results').innerHTML = '';
+  document.getElementById('searchResultsPanel').classList.add('hidden');
+  document.getElementById('btnVerResultados').classList.add('hidden');
+  actualizarSedeComboLabel('consulta');
+  actualizarSedeComboLabel('estudios');
+  document.querySelectorAll('.sede-combo-panel').forEach(p => p.classList.add('hidden'));
+  cambiarModoBusqueda('consulta');
+  showPage('page-wizard');
+  goToStep(1);
+}
+
+function cambiarModoBusqueda(modo){
+  searchMode = modo;
+  document.getElementById('tabConsulta').classList.toggle('active', modo === 'consulta');
+  document.getElementById('tabEstudio').classList.toggle('active', modo === 'estudio');
+  document.getElementById('panelConsulta').classList.toggle('hidden', modo !== 'consulta');
+  document.getElementById('panelEstudio').classList.toggle('hidden', modo !== 'estudio');
+  document.getElementById('search-results').innerHTML = '';
+  document.getElementById('searchResultsPanel').classList.add('hidden');
+  document.getElementById('btnVerResultados').classList.add('hidden');
+}
+
+function goToStep(n){
+  currentStepNum = n;
+  document.querySelectorAll('.wizard-step').forEach(s => s.classList.add('hidden'));
+  document.getElementById('step-' + n).classList.remove('hidden');
+
+  document.querySelectorAll('#stepsNav .step').forEach(li => {
+    const stepNum = parseInt(li.dataset.step, 10);
+    li.classList.remove('active','complete');
+    if(stepNum < n) li.classList.add('complete');
+    if(stepNum === n) li.classList.add('active');
+  });
+
+  document.getElementById('progressFill').style.width = ((n-1)/3*100) + '%';
+  window.scrollTo(0,0);
+}
+
+/* ============ PASO 1: BÚSQUEDA ============ */
+function poblarSelects(){
+  const selEsp = document.getElementById('f-especialidad');
+  ESPECIALIDADES.forEach(e => {
+    const o = document.createElement('option'); o.value = e; o.textContent = e;
+    selEsp.appendChild(o);
+  });
+  const unidadesOrdenadas = UNIDADES.slice().sort((a, b) => a.ciudad.localeCompare(b.ciudad) || a.nombre.localeCompare(b.nombre));
+  const sedeChecksHtml = (variante) => unidadesOrdenadas.map(u =>
+    '<label class="sede-check-item" data-ciudad="' + u.ciudad + '"><input type="checkbox" value="' + u.nombre + '" onchange="actualizarSedeComboLabel(\'' + variante + '\')">' + sedeDot(u.nombre) + u.nombre + '</label>'
+  ).join('');
+  document.getElementById('sedeChecks').innerHTML = sedeChecksHtml('consulta');
+  document.getElementById('sedeChecksEstudios').innerHTML = sedeChecksHtml('estudios');
+
+  const ciudades = [...new Set(UNIDADES.map(u => u.ciudad))].sort((a, b) => a.localeCompare(b));
+  const opcionesCiudad = '<option value="">Todas las ciudades</option>' + ciudades.map(c => '<option value="' + c + '">' + c + '</option>').join('');
+  document.getElementById('filtroCiudadSede').innerHTML = opcionesCiudad;
+  document.getElementById('filtroCiudadSedeEstudios').innerHTML = opcionesCiudad;
+
+  const selAseg = document.getElementById('d-aseguradoraSelect');
+  selAseg.innerHTML = '<option value="">Selecciona tu aseguradora</option>' +
+    ASEGURADORAS_REALES.map(a => '<option value="' + a + '">' + a + '</option>').join('') +
+    '<option value="otra">Otra (no está en la lista)</option>';
+  renderEspecialidadesDestacadas();
+}
+
+function filtrarSedeChecksPorCiudad(containerId, ciudad){
+  document.querySelectorAll('#' + containerId + ' .sede-check-item').forEach(el => {
+    el.style.display = (!ciudad || el.dataset.ciudad === ciudad) ? '' : 'none';
+  });
+}
+
+function toggleSedeCombo(variante){
+  const panel = document.getElementById('sedeComboPanel-' + variante);
+  const estaAbierto = !panel.classList.contains('hidden');
+  document.querySelectorAll('.sede-combo-panel').forEach(p => p.classList.add('hidden'));
+  if(!estaAbierto) panel.classList.remove('hidden');
+}
+
+document.addEventListener('click', function(e){
+  if(!e.target.closest('.sede-combo')){
+    document.querySelectorAll('.sede-combo-panel').forEach(p => p.classList.add('hidden'));
+  }
+});
+
+function actualizarSedeComboLabel(variante){
+  const containerId = variante === 'consulta' ? 'sedeChecks' : 'sedeChecksEstudios';
+  const n = document.querySelectorAll('#' + containerId + ' input:checked').length;
+  document.getElementById('sedeComboLabel-' + variante).textContent =
+    n === 0 ? 'Todas las sedes' : (n + ' sede' + (n > 1 ? 's' : '') + ' seleccionada' + (n > 1 ? 's' : ''));
+}
+
+function calcularCuposPorEspecialidad(){
+  const map = {};
+  ESPECIALIDADES.forEach(e => map[e] = 0);
+  DOCTORS.forEach(d => { map[d.especialidad] += d.cupos24; });
+  return map;
+}
+
+function renderEspecialidadesDestacadas(){
+  const map = calcularCuposPorEspecialidad();
+  const top = Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  document.getElementById('especialidadesDestacadas').innerHTML = top.map(([esp, cupos]) =>
+    '<div class="spec-quick-card">' +
+      '<div class="spec-quick-title">' + esp + '</div>' +
+      '<div class="spec-quick-cupos"><strong>' + cupos + ' cupos</strong> disponibles dentro de las próximas 24 horas.</div>' +
+      '<button type="button" class="btn btn-primary btn-sm" onclick="filtrarPorEspecialidadDirecta(\'' + esp.replace(/'/g, "\\'") + '\')">Ver horas disponibles</button>' +
+    '</div>'
+  ).join('');
+}
+
+function filtrarPorEspecialidadDirecta(especialidad){
+  document.getElementById('f-especialidad').value = especialidad;
+  buscarMedicos({ preventDefault: function(){} });
+}
+
+function mostrarPanelResultados(){
+  document.getElementById('searchResultsPanel').classList.remove('hidden');
+  document.getElementById('btnVerResultados').classList.add('hidden');
+}
+
+function ocultarPanelResultados(){
+  document.getElementById('searchResultsPanel').classList.add('hidden');
+  document.getElementById('btnVerResultados').classList.remove('hidden');
+}
+
+function buscarMedicos(e){
+  e.preventDefault();
+  mostrarPanelResultados();
+  const especialidad = document.getElementById('f-especialidad').value;
+  const sedesSeleccionadas = Array.from(document.querySelectorAll('#sedeChecks input:checked')).map(el => el.value);
+  const nombre = document.getElementById('f-nombre').value.trim().toLowerCase();
+  const franja = document.getElementById('f-franja').value;
+
+  let resultados = DOCTORS.filter(d => {
+    if(especialidad && d.especialidad !== especialidad) return false;
+    if(sedesSeleccionadas.length && !sedesSeleccionadas.includes(d.sede)) return false;
+    if(nombre && !d.nombre.toLowerCase().includes(nombre)) return false;
+    if(franja === '24h' && d.cupos24 <= 0) return false;
+    if(franja === '48h' && d.cupos48 <= 0) return false;
+    return true;
+  });
+
+  // Se ordena por mayor disponibilidad primero (24h, luego 48h) y como criterio final, alfabético
+  resultados = resultados.slice().sort((a, b) => {
+    if(b.cupos24 !== a.cupos24) return b.cupos24 - a.cupos24;
+    if(b.cupos48 !== a.cupos48) return b.cupos48 - a.cupos48;
+    return a.nombre.localeCompare(b.nombre);
+  });
+
+  renderResultados(resultados);
+}
+
+function renderResultados(lista){
+  const cont = document.getElementById('search-results');
+  document.getElementById('resultsCountLabel').textContent = lista.length + ' médico(s) encontrado(s)';
+
+  if(lista.length === 0){
+    cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-magnifying-glass"></i><div>No encontramos médicos con esos filtros. Intenta ampliar tu búsqueda.</div></div>';
+    return;
+  }
+  const encabezado = '<div class="results-sort-note"><i class="fa-solid fa-arrow-down-wide-short"></i> Ordenados por mayor disponibilidad</div>';
+
+  cont.innerHTML = encabezado + lista.map(d => {
+    const cuposClass = d.cupos24 > 0 ? 'badge-cupos-ok' : 'badge-cupos-low';
+    const cuposTexto = d.cupos24 > 0
+      ? d.cupos24 + ' cupos en próx. 24 hrs'
+      : (d.cupos48 > 0 ? d.cupos48 + ' cupos en próx. 48 hrs' : 'Sin cupos próximos');
+    return '<div class="doctor-card" onclick="selectDoctor(' + d.id + ')">' +
+      '<div class="avatar">' + initials(d.nombre) + '</div>' +
+      '<div class="doctor-info">' +
+        '<h4>' + d.nombre + '</h4>' +
+        '<div class="meta"><i class="fa-solid fa-stethoscope"></i> ' + d.especialidad + '</div>' +
+        '<div class="meta">' + sedeDot(d.sede) + d.sede + '</div>' +
+        '<span class="badge ' + cuposClass + '"><i class="fa-solid fa-bolt"></i> ' + cuposTexto + '</span>' +
+        '<span class="badge badge-precio">' + formatoMXN(precioConsultaEnUnidad(d.especialidad, d.sede)) + ' particular</span>' +
+        renderConvenioBadges(d) +
+      '</div>' +
+      '<i class="fa-solid fa-chevron-right" style="color:var(--cm-border);"></i>' +
+    '</div>';
+  }).join('');
+}
+
+/* ============ BÚSQUEDA DE ESTUDIOS CLÍNICOS ============ */
+function sedesQueOfrecen(estudio){
+  const catKey = estudio.categoria === 'laboratorio' ? 'laboratorio' : 'imagenologia';
+  return UNIDADES.filter(u => u.servicios.includes(catKey)).map(u => u.nombre);
+}
+
+function buscarEstudios(e){
+  e.preventDefault();
+  mostrarPanelResultados();
+  const categoria = document.getElementById('e-categoria').value;
+  const sedesSeleccionadas = Array.from(document.querySelectorAll('#sedeChecksEstudios input:checked')).map(el => el.value);
+  const nombre = document.getElementById('e-nombre').value.trim().toLowerCase();
+  const franja = document.getElementById('e-franja').value;
+
+  let resultados = ESTUDIOS.filter(es => {
+    if(categoria && es.categoria !== categoria) return false;
+    if(nombre && !es.nombre.toLowerCase().includes(nombre)) return false;
+    if(franja === '24h' && es.cupos24 <= 0) return false;
+    if(franja === '48h' && es.cupos48 <= 0) return false;
+    if(sedesSeleccionadas.length){
+      const disponiblesAqui = sedesQueOfrecen(es);
+      if(!sedesSeleccionadas.some(s => disponiblesAqui.includes(s))) return false;
+    }
+    return true;
+  });
+
+  resultados = resultados.slice().sort((a, b) => b.cupos24 - a.cupos24 || b.cupos48 - a.cupos48 || a.nombre.localeCompare(b.nombre));
+  renderResultadosEstudios(resultados);
+}
+
+function renderResultadosEstudios(lista){
+  const cont = document.getElementById('search-results');
+  document.getElementById('resultsCountLabel').textContent = lista.length + ' estudio(s) encontrado(s)';
+
+  if(lista.length === 0){
+    cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-flask"></i><div>No encontramos estudios con esos filtros. Intenta ampliar tu búsqueda.</div></div>';
+    return;
+  }
+
+  cont.innerHTML = lista.map(es => {
+    const cuposClass = es.cupos24 > 0 ? 'badge-cupos-ok' : 'badge-cupos-low';
+    const cuposTexto = es.cupos24 > 0 ? es.cupos24 + ' cupos en próx. 24 hrs' : (es.cupos48 > 0 ? es.cupos48 + ' cupos en próx. 48 hrs' : 'Sin cupos próximos');
+    const sedesEstudio = sedesQueOfrecen(es);
+    const nUnidades = sedesEstudio.length;
+    const precioMin = Math.min(...sedesEstudio.map(s => precioEstudioEnUnidad(es.id, s)));
+    const catLabel = es.categoria === 'laboratorio' ? 'Laboratorio' : 'Imagen';
+    return '<div class="doctor-card" onclick="abrirModalEstudio(' + es.id + ')">' +
+      '<div class="avatar"><i class="fa-solid fa-' + (es.categoria === 'laboratorio' ? 'flask' : 'x-ray') + '"></i></div>' +
+      '<div class="doctor-info">' +
+        '<h4>' + es.nombre + '</h4>' +
+        '<div class="meta"><span class="badge badge-categoria-' + es.categoria + '">' + catLabel + '</span></div>' +
+        '<div class="meta"><i class="fa-solid fa-hospital"></i> Disponible en ' + nUnidades + ' unidad(es)</div>' +
+        '<span class="badge ' + cuposClass + '"><i class="fa-solid fa-bolt"></i> ' + cuposTexto + '</span>' +
+        '<span class="badge badge-precio">Desde ' + formatoMXN(precioMin) + '</span>' +
+        renderConvenioBadges(es) +
+      '</div>' +
+      '<i class="fa-solid fa-chevron-right" style="color:var(--cm-border);"></i>' +
+    '</div>';
+  }).join('');
+}
+
+function abrirModalEstudio(estudioId){
+  currentEstudio = ESTUDIOS.find(es => es.id === estudioId);
+  currentEstudio._sedesDisponibles = sedesQueOfrecen(currentEstudio);
+  booking.tipoServicio = 'estudio';
+  seleccionarSedeEstudio(currentEstudio._sedesDisponibles[0]);
+}
+
+function seleccionarSedeEstudio(sede){
+  currentEstudioSede = sede;
+  const seedId = 9000 + currentEstudio.id * 10 + UNIDADES.findIndex(u => u.nombre === sede);
+  const unidad = obtenerUnidad(sede);
+  const conveniosEnEstaUnidad = unidad ? currentEstudio.convenios.filter(c => unidad.convenios.includes(c)) : currentEstudio.convenios;
+  currentDoctor = {
+    id: seedId,
+    nombre: currentEstudio.nombre,
+    especialidad: currentEstudio.categoria === 'laboratorio' ? 'Estudio de Laboratorio' : 'Estudio de Imagen',
+    sede: sede,
+    convenios: conveniosEnEstaUnidad.length ? conveniosEnEstaUnidad : ['particular'],
+    esEstudio: true,
+    estudioRef: currentEstudio
+  };
+  currentDoctor.horarios = generarHorarios(currentDoctor.id);
+  booking.fecha = null; booking.hora = null;
+  const primerDisponible = currentDoctor.horarios.findIndex(d => d.nivel > 0);
+  currentDayIndex = primerDisponible >= 0 ? primerDisponible : 0;
+  abrirModalMedico();
+}
+
+/* ============ SELECCIÓN DE MÉDICO (ventana modal grande, dentro de Fase 1) ============ */
+function selectDoctor(id){
+  booking.tipoServicio = 'consulta';
+  currentDoctor = DOCTORS.find(d => d.id === id);
+  currentDoctor.horarios = currentDoctor.horarios || generarHorarios(currentDoctor.id);
+  booking.especialidad = currentDoctor.especialidad;
+  booking.sede = currentDoctor.sede;
+  booking.fecha = null;
+  booking.hora = null;
+  const primerDisponible = currentDoctor.horarios.findIndex(d => d.nivel > 0);
+  currentDayIndex = primerDisponible >= 0 ? primerDisponible : 0;
+  abrirModalMedico();
+}
+
+function construirEncabezadoModalMedico(){
+  if(currentDoctor.esEstudio){
+    const cat = currentDoctor.estudioRef.categoria;
+    const precioEstudio = precioEstudioEnUnidad(currentDoctor.estudioRef.id, currentEstudioSede);
+    return '<div class="medico-modal-header">' +
+        '<div class="avatar avatar-lg estudio-icon"><i class="fa-solid fa-' + (cat === 'laboratorio' ? 'flask' : 'x-ray') + '"></i></div>' +
+        '<div>' +
+          '<h3>' + currentDoctor.nombre + '</h3>' +
+          '<div class="meta-lg"><span class="badge badge-categoria-' + cat + '">' + (cat === 'laboratorio' ? 'Laboratorio' : 'Imagen') + '</span> <span class="badge badge-precio">' + formatoMXN(precioEstudio) + ' particular en esta unidad</span></div>' +
+          renderConvenioBadges(currentDoctor) +
+        '</div>' +
+      '</div>' +
+      '<p class="estudio-descripcion">' + currentDoctor.estudioRef.descripcion + '</p>' +
+      '<div class="preparacion-box"><i class="fa-solid fa-triangle-exclamation"></i><div><strong>Preparación:</strong> ' + currentDoctor.estudioRef.preparacion + '</div></div>' +
+      '<div class="sede-selector-label">Elige la unidad donde realizarte el estudio:</div>' +
+      '<div class="sede-chips-selector">' + currentEstudio._sedesDisponibles.map(s =>
+        '<button type="button" class="sede-chip-btn' + (s === currentEstudioSede ? ' active' : '') + '" onclick="seleccionarSedeEstudio(\'' + s.replace(/'/g, "\\'") + '\')">' + sedeDot(s) + s + ' &middot; ' + formatoMXN(precioEstudioEnUnidad(currentDoctor.estudioRef.id, s)) + '</button>'
+      ).join('') + '</div>';
+  }
+  const precioConsulta = precioConsultaEnUnidad(currentDoctor.especialidad, currentDoctor.sede);
+  return '<div class="medico-modal-header">' +
+      '<div class="avatar avatar-lg">' + initials(currentDoctor.nombre) + '</div>' +
+      '<div>' +
+        '<h3>' + currentDoctor.nombre + '</h3>' +
+        '<div class="meta-lg"><i class="fa-solid fa-stethoscope"></i> ' + currentDoctor.especialidad + '</div>' +
+        '<div class="meta-lg">' + sedeDot(currentDoctor.sede) + currentDoctor.sede + '</div>' +
+        '<div class="meta-lg"><span class="badge badge-precio">' + formatoMXN(precioConsulta) + ' particular</span></div>' +
+        renderConvenioBadges(currentDoctor) +
+      '</div>' +
+    '</div>';
+}
+
+function abrirModalMedico(){
+  document.getElementById('modalBox').className = 'modal modal-xl';
+  document.getElementById('modalBox').innerHTML =
+    construirEncabezadoModalMedico() +
+    '<div class="modal-divider"></div>' +
+    '<div class="medico-modal-section-title"><i class="fa-solid fa-calendar-days"></i> Elige fecha y hora</div>' +
+    '<div class="cal-flex">' +
+      '<div class="cal-col-calendar">' +
+        '<div class="cal-header" id="calendarRangeLabel"></div>' +
+        '<div class="cal-legend">' +
+          '<span><i class="cal-dot nivel-3"></i> Mucha disponibilidad</span>' +
+          '<span><i class="cal-dot nivel-2"></i> Media</span>' +
+          '<span><i class="cal-dot nivel-1"></i> Poca</span>' +
+          '<span><i class="cal-dot nivel-0"></i> Sin consulta</span>' +
+        '</div>' +
+        '<div class="cal-weekdays"><span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sa</span><span>Do</span></div>' +
+        '<div class="cal-days" id="calendarDays"></div>' +
+      '</div>' +
+      '<div class="cal-col-slots">' +
+        '<div class="selected-day-label" id="selectedDayLabel"></div>' +
+        '<div class="slots-grid" id="slotsGrid"></div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="btn-row split">' +
+      '<button type="button" class="btn btn-text" onclick="closeModal()">Cancelar</button>' +
+      '<button type="button" class="btn btn-primary btn-lg" id="btnContinuarSlot" disabled onclick="confirmarSeleccionMedico()">Continuar <i class="fa-solid fa-arrow-right"></i></button>' +
+    '</div>';
+
+  document.getElementById('modalOverlay').classList.remove('hidden');
+  document.getElementById('btnContinuarSlot').disabled = !booking.hora;
+  renderCalendarGrid();
+  renderSlots();
+}
+
+function renderCalendarGrid(){
+  const dias = currentDoctor.horarios;
+  const primero = dias[0].dia, ultimo = dias[dias.length - 1].dia;
+  document.getElementById('calendarRangeLabel').textContent =
+    primero.diaMes + ' ' + MESES[primero.mes] + ' al ' + ultimo.diaMes + ' ' + MESES[ultimo.mes];
+
+  const colInicial = (primero.diaSemana + 6) % 7; // lunes=0 ... domingo=6
+  let html = '';
+  for(let i = 0; i < colInicial; i++){ html += '<div class="cal-cell empty"></div>'; }
+  dias.forEach((d, idx) => {
+    const selected = idx === currentDayIndex ? ' selected' : '';
+    const clickable = d.nivel > 0 ? ' onclick="cambiarDia(' + idx + ')"' : '';
+    html += '<div class="cal-cell nivel-' + d.nivel + selected + '"' + clickable + '>' + d.dia.diaMes + '</div>';
+  });
+  document.getElementById('calendarDays').innerHTML = html;
+
+  const diaSel = dias[currentDayIndex];
+  document.getElementById('selectedDayLabel').textContent =
+    (diaSel.nivel > 0 ? 'Horarios para ' : 'Sin horarios para ') + diaSel.dia.label;
+}
+
+function cambiarDia(i){
+  currentDayIndex = i;
+  booking.fecha = null; booking.hora = null;
+  document.getElementById('btnContinuarSlot').disabled = true;
+  renderCalendarGrid();
+  renderSlots();
+}
+
+function renderSlots(){
+  const dia = currentDoctor.horarios[currentDayIndex];
+  const cont = document.getElementById('slotsGrid');
+  if(dia.nivel === 0){
+    cont.innerHTML = '<div class="field-hint">Este médico no tiene consulta este día. Elige otra fecha en el calendario.</div>';
+    return;
+  }
+  cont.innerHTML = dia.slots.map(s => {
+    if(s.taken) return '<div class="slot-btn taken">' + s.hora + '</div>';
+    const selected = (booking.hora === s.hora && booking.fecha === dia.dia.label);
+    return '<div class="slot-btn' + (selected?' selected':'') + '" onclick="elegirSlot(\'' + s.hora + '\')">' + s.hora + '</div>';
+  }).join('');
+}
+
+function elegirSlot(hora){
+  const dia = currentDoctor.horarios[currentDayIndex];
+  booking.fecha = dia.dia.label;
+  booking.hora = hora;
+  const d = new Date();
+  d.setDate(d.getDate() + dia.dia.offset);
+  booking.fechaISO = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  document.getElementById('btnContinuarSlot').disabled = false;
+  renderSlots();
+}
+
+function confirmarSeleccionMedico(){
+  closeModal();
+  document.getElementById('convenioReminder').innerHTML =
+    '<i class="fa-solid fa-circle-info"></i> ' + currentDoctor.nombre + ' acepta: ' +
+    currentDoctor.convenios.map(c => CONVENIO_NOMBRES[c]).join(', ') + '.';
+  goToStep(3);
+  validarConvenioMedico();
+  actualizarCamposPorUnidad();
+}
+
+function validarConvenioMedico(){
+  const v = document.getElementById('d-convenio').value;
+  const warning = document.getElementById('convenioWarning');
+  const aceptado = currentDoctor.convenios.includes(v);
+  if(!aceptado){
+    warning.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> ' + currentDoctor.nombre + ' no acepta "' + CONVENIO_NOMBRES[v] + '". Acepta: ' + currentDoctor.convenios.map(c => CONVENIO_NOMBRES[c]).join(', ') + '.';
+    warning.classList.add('show');
+  } else {
+    warning.classList.remove('show');
+  }
+  return aceptado;
+}
+
+function volverASeleccion(){
+  if(booking.fecha){
+    const idx = currentDoctor.horarios.findIndex(d => d.dia.label === booking.fecha);
+    currentDayIndex = idx >= 0 ? idx : 0;
+  }
+  cambiarModoBusqueda(currentDoctor.esEstudio ? 'estudio' : 'consulta');
+  goToStep(1);
+  abrirModalMedico();
+}
+
+/* ============ PASO 3: DATOS ============ */
+function toggleConvenioExtra(){
+  const v = document.getElementById('d-convenio').value;
+  const grp = document.getElementById('grp-convenioExtra');
+  const lbl = document.getElementById('lbl-convenioExtra');
+  const tip = document.getElementById('tip-convenioExtra');
+  const input = document.getElementById('d-convenioExtra');
+  const selectAseg = document.getElementById('d-aseguradoraSelect');
+  if(v === 'seguro'){
+    grp.classList.remove('hidden');
+    lbl.textContent = 'Aseguradora';
+    tip.textContent = 'Selecciona la aseguradora que respalda tu póliza. Lista verificada de aseguradoras con convenio vigente con CHRISTUS MUGUERZA.';
+    selectAseg.classList.remove('hidden');
+    toggleAseguradoraOtra();
+  } else if(v === 'empresa'){
+    grp.classList.remove('hidden');
+    lbl.textContent = 'Empresa / Convenio';
+    tip.textContent = 'Nombre de la empresa o convenio corporativo que tiene un acuerdo con CHRISTUS MUGUERZA.';
+    selectAseg.classList.add('hidden');
+    input.classList.remove('hidden');
+    input.placeholder = 'Nombre de la empresa o convenio';
+    input.value = '';
+  } else {
+    grp.classList.add('hidden');
+    selectAseg.classList.add('hidden');
+    input.classList.add('hidden');
+    input.value = '';
+  }
+}
+
+/* Socios CHRISTUS mock — la llave de búsqueda es correo + teléfono, igual que en el sistema real.
+   No se pide número de membresía: el sistema lo resuelve con los datos de contacto del paciente. */
+const SOCIOS_CHRISTUS_MOCK = [
+  { correo:"lucia.ramirez@gmail.com",      telefono:"8112345678" },
+  { correo:"marco.hernandez@hotmail.com",  telefono:"8198765432" },
+  { correo:"anasofia.garza@outlook.com",   telefono:"8187654321" },
+  { correo:"roberto.trevino@gmail.com",    telefono:"8145678901" },
+  { correo:"jorgeguerrerp90@gmail.com",    telefono:"8110001111" }
+];
+
+function toggleSocioChristus(){
+  const v = document.querySelector('input[name="socioChristus"]:checked').value;
+  const nota = document.getElementById('socioChristusNota');
+  const grpVal = document.getElementById('grp-socioValidacion');
+  if(v === 'si'){
+    nota.classList.add('hidden');
+    grpVal.classList.remove('hidden');
+    validarMembresiaSocio();
+  } else {
+    nota.classList.remove('hidden');
+    grpVal.classList.add('hidden');
+    document.getElementById('socioMembresiaResultado').innerHTML = '';
+    booking.socioMembresiaValidada = false;
+  }
+}
+
+function validarMembresiaSocio(){
+  const correo = document.getElementById('d-correo').value.trim().toLowerCase();
+  const telefono = document.getElementById('d-telefono').value.trim();
+  const resultado = document.getElementById('socioMembresiaResultado');
+  if(!correo && !telefono){
+    resultado.innerHTML = '<span style="color:var(--cm-muted);"><i class="fa-solid fa-circle-info"></i> Ingresa tu correo y teléfono arriba para validar tu membresía.</span>';
+    booking.socioMembresiaValidada = false;
+    return;
+  }
+  const encontrado = SOCIOS_CHRISTUS_MOCK.find(s => s.correo === correo && s.telefono === telefono);
+  if(encontrado){
+    resultado.innerHTML = '<span style="color:var(--cm-success);"><i class="fa-solid fa-circle-check"></i> Membresía vigente identificada. Se aplicará tu precio preferente en esta cita.</span>';
+    booking.socioMembresiaValidada = true;
+  } else {
+    resultado.innerHTML = '<span style="color:var(--cm-warning);"><i class="fa-solid fa-triangle-exclamation"></i> No encontramos membresía activa con esos datos. Puedes continuar — lo confirmaremos en tu unidad el día de la cita.</span>';
+    booking.socioMembresiaValidada = false;
+  }
+}
+
+function revisarSocioSiActivo(){
+  if(document.querySelector('input[name="socioChristus"]:checked') &&
+     document.querySelector('input[name="socioChristus"]:checked').value === 'si'){
+    validarMembresiaSocio();
+  }
+}
+
+function toggleExtranjero(){
+  const esExtranjero = document.getElementById('d-esExtranjero').checked;
+  document.getElementById('grp-curp-rfc-row').classList.toggle('hidden', esExtranjero);
+  document.getElementById('grp-pasaporte-row').classList.toggle('hidden', !esExtranjero);
+  if(esExtranjero){
+    document.getElementById('d-curp').value = '';
+    setError('grp-curp', false);
+  } else {
+    document.getElementById('d-pasaporte').value = '';
+    document.getElementById('d-paisOrigen').value = '';
+    setError('grp-pasaporte', false);
+    setError('grp-paisOrigen', false);
+  }
+}
+
+function toggleAseguradoraOtra(){
+  const sel = document.getElementById('d-aseguradoraSelect');
+  const input = document.getElementById('d-convenioExtra');
+  if(sel.value === 'otra'){
+    input.classList.remove('hidden');
+    input.placeholder = 'Escribe el nombre de tu aseguradora';
+    input.value = '';
+  } else {
+    input.classList.add('hidden');
+    input.value = sel.value;
+  }
+}
+
+function toggleParaQuien(){
+  const v = document.querySelector('input[name="paraQuien"]:checked').value;
+  document.getElementById('grp-familiarExtra').classList.toggle('hidden', v !== 'familiar');
+  document.getElementById('lbl-nombre').textContent = v === 'familiar'
+    ? 'Nombre completo del familiar (quien recibirá la atención)'
+    : 'Nombre completo (de quien recibirá la atención)';
+}
+
+/* Unidades que solicitan Estado de Nacimiento como dato obligatorio de admisión
+   (según reglas confirmadas en revisión interna; el resto usa el patrón base sin este campo). */
+const UNIDADES_REQUIEREN_ESTADO_NACIMIENTO = ["Hospital Cumbres (Monterrey)"];
+
+function actualizarCamposPorUnidad(){
+  const requiereEstado = currentDoctor && UNIDADES_REQUIEREN_ESTADO_NACIMIENTO.includes(currentDoctor.sede);
+  document.getElementById('grp-estadoNacimiento').classList.toggle('hidden', !requiereEstado);
+  if(!requiereEstado){
+    document.getElementById('d-estadoNacimiento').value = '';
+    setError('grp-estadoNacimiento', false);
+  }
+}
+
+function toggleSaludDetalle(campo){
+  const valor = document.querySelector('input[name="' + campo + '"]:checked').value;
+  const grp = document.getElementById('grp-' + campo + 'Detalle');
+  if(valor === 'si'){
+    grp.classList.remove('hidden');
+  } else {
+    grp.classList.add('hidden');
+    document.getElementById('d-' + campo + 'Detalle').value = '';
+    setError('grp-' + campo + 'Detalle', false);
+  }
+}
+
+function setError(groupId, isError){
+  document.getElementById(groupId).classList.toggle('has-error', isError);
+}
+
+function validarDatos(e){
+  e.preventDefault();
+  let valido = true;
+
+  const paraQuien = document.querySelector('input[name="paraQuien"]:checked').value;
+
+  const fechaNacimiento = document.getElementById('d-fechaNacimiento').value;
+  setError('grp-fechaNacimiento', !fechaNacimiento); if(!fechaNacimiento) valido = false;
+
+  const sexo = document.getElementById('d-sexo').value;
+  setError('grp-sexo', !sexo); if(!sexo) valido = false;
+
+  const estadoCivil = document.getElementById('d-estadoCivil').value;
+  setError('grp-estadoCivil', !estadoCivil); if(!estadoCivil) valido = false;
+
+  const requiereEstadoNacimiento = !document.getElementById('grp-estadoNacimiento').classList.contains('hidden');
+  const estadoNacimiento = document.getElementById('d-estadoNacimiento').value;
+  if(requiereEstadoNacimiento){ setError('grp-estadoNacimiento', !estadoNacimiento); if(!estadoNacimiento) valido = false; }
+
+  const esExtranjero = document.getElementById('d-esExtranjero').checked;
+  let curp = '';
+  if(!esExtranjero){
+    curp = document.getElementById('d-curp').value.trim().toUpperCase();
+    setError('grp-curp', curp.length > 0 && !/^[A-Z0-9]{18}$/.test(curp));
+    const rfc = document.getElementById('d-rfc').value.trim().toUpperCase();
+    setError('grp-rfc', rfc.length > 0 && !/^[A-Z0-9]{12,13}$/.test(rfc));
+  } else {
+    const pasaporte = document.getElementById('d-pasaporte').value.trim();
+    setError('grp-pasaporte', !pasaporte); if(!pasaporte) valido = false;
+    const paisOrigen = document.getElementById('d-paisOrigen').value;
+    setError('grp-paisOrigen', !paisOrigen); if(!paisOrigen) valido = false;
+  }
+
+  const nombre = document.getElementById('d-nombre').value.trim();
+  setError('grp-nombre', !nombre); if(!nombre) valido = false;
+
+  const correo = document.getElementById('d-correo').value.trim();
+  const correoOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
+  setError('grp-correo', !correoOk); if(!correoOk) valido = false;
+
+  const telefono = document.getElementById('d-telefono').value.trim();
+  const telOk = /^\d{10}$/.test(telefono);
+  setError('grp-telefono', !telOk); if(!telOk) valido = false;
+
+  const convenio = document.getElementById('d-convenio').value;
+  if(convenio !== 'particular'){
+    const extra = document.getElementById('d-convenioExtra').value.trim();
+    setError('grp-convenioExtra', !extra); if(!extra) valido = false;
+  } else {
+    setError('grp-convenioExtra', false);
+  }
+
+  const convenioOk = validarConvenioMedico();
+  setError('grp-convenio', !convenioOk); if(!convenioOk) valido = false;
+
+  const medicamentos = document.querySelector('input[name="medicamentos"]:checked').value;
+  const medicamentosDetalle = document.getElementById('d-medicamentosDetalle').value.trim();
+  if(medicamentos === 'si'){ setError('grp-medicamentosDetalle', !medicamentosDetalle); if(!medicamentosDetalle) valido = false; }
+
+  const alergias = document.querySelector('input[name="alergias"]:checked').value;
+  const alergiasDetalle = document.getElementById('d-alergiasDetalle').value.trim();
+  if(alergias === 'si'){ setError('grp-alergiasDetalle', !alergiasDetalle); if(!alergiasDetalle) valido = false; }
+
+  const cronicas = document.querySelector('input[name="cronicas"]:checked').value;
+  const cronicasDetalle = document.getElementById('d-cronicasDetalle').value.trim();
+  if(cronicas === 'si'){ setError('grp-cronicasDetalle', !cronicasDetalle); if(!cronicasDetalle) valido = false; }
+
+  const aviso = document.getElementById('d-aviso').checked;
+  setError('grp-aviso', !aviso); if(!aviso) valido = false;
+
+  if(!valido){
+    const firstError = document.querySelector('.has-error');
+    if(firstError) firstError.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+
+  booking.paciente = {
+    expediente: document.getElementById('d-expediente').value.trim() || null,
+    esExtranjero: esExtranjero,
+    nombre: nombre,
+    correo: correo,
+    telefono: telefono,
+    whatsapp: document.getElementById('d-whatsapp').checked,
+    convenio: convenio,
+    convenioExtra: document.getElementById('d-convenioExtra').value.trim(),
+    socioChristus: document.querySelector('input[name="socioChristus"]:checked').value === 'si',
+    socioMembresiaValidada: !!booking.socioMembresiaValidada,
+    metodoPago: document.querySelector('input[name="metodoPago"]:checked').value,
+    paraQuien: paraQuien,
+    parentesco: paraQuien === 'familiar' ? document.getElementById('d-parentesco').value : null,
+    fechaNacimiento: fechaNacimiento,
+    sexo: sexo,
+    estadoCivil: estadoCivil,
+    estadoNacimiento: requiereEstadoNacimiento ? estadoNacimiento : null,
+    curp: !esExtranjero ? (curp || null) : null,
+    rfc: !esExtranjero ? (document.getElementById('d-rfc').value.trim().toUpperCase() || null) : null,
+    docIdentidad: esExtranjero ? document.getElementById('d-pasaporte').value.trim() : null,
+    paisOrigen: esExtranjero ? document.getElementById('d-paisOrigen').value : null,
+    salud: {
+      medicamentos: medicamentos === 'si' ? medicamentosDetalle : null,
+      alergias: alergias === 'si' ? alergiasDetalle : null,
+      cronicas: cronicas === 'si' ? cronicasDetalle : null,
+      motivo: document.getElementById('d-motivo').value.trim()
+    }
+  };
+
+  crearCita();
+}
+
+/* ============ PASO 4: CONFIRMACIÓN ============ */
+function crearCita(){
+  const folio = generarFolio();
+  const precioAprox = currentDoctor.esEstudio
+    ? precioEstudioEnUnidad(currentDoctor.estudioRef.id, currentDoctor.sede)
+    : precioConsultaEnUnidad(currentDoctor.especialidad, currentDoctor.sede);
+  const cita = {
+    id: Date.now(),
+    folio: folio,
+    doctor: currentDoctor,
+    especialidad: currentDoctor.especialidad,
+    sede: currentDoctor.sede,
+    fecha: booking.fecha,
+    hora: booking.hora,
+    paciente: booking.paciente,
+    tipoServicio: booking.tipoServicio || 'consulta',
+    precioAprox: precioAprox,
+    status: 'confirmada'
+  };
+  citas.unshift(cita);
+
+  /* ── Persistir en localStorage para el Panel Médico ── */
+  try {
+    const stored = JSON.parse(localStorage.getItem('cm_citas_agendadas') || '[]');
+    const [hh, mm] = (cita.hora || '00:00').split(':').map(Number);
+    const salud = cita.paciente.salud || {};
+    const notas = [
+      salud.medicamentos ? 'Medicamentos: ' + salud.medicamentos : null,
+      salud.alergias ? 'Alergias: ' + salud.alergias : null
+    ].filter(Boolean).join('. ') || null;
+    let edad = null;
+    if(cita.paciente.fechaNacimiento){
+      const b = new Date(cita.paciente.fechaNacimiento);
+      const hoy = new Date();
+      edad = hoy.getFullYear() - b.getFullYear();
+      if(hoy.getMonth() < b.getMonth() || (hoy.getMonth() === b.getMonth() && hoy.getDate() < b.getDate())) edad--;
+    }
+    stored.unshift({
+      id: cita.id,
+      folio: cita.folio,
+      doctorId: cita.doctor.id,
+      doctorNombre: cita.doctor.nombre,
+      especialidad: cita.especialidad,
+      sede: cita.sede,
+      fechaISO: booking.fechaISO || new Date().toISOString().split('T')[0],
+      hora: cita.hora,
+      horaMin: hh * 60 + mm,
+      paciente: cita.paciente.nombre,
+      edad: edad,
+      tipo: cita.tipoServicio || 'consulta',
+      motivo: cita.tipoServicio === 'estudio' ? cita.doctor.nombre : (salud.motivo || 'Consulta médica'),
+      convenio: cita.paciente.convenio,
+      status: 'programada',
+      telefono: cita.paciente.telefono,
+      notas: notas,
+      duracion: cita.tipoServicio === 'estudio' ? 20 : 30,
+      esReal: true
+    });
+    localStorage.setItem('cm_citas_agendadas', JSON.stringify(stored));
+  } catch(e) {}
+
+  booking.ultimaCita = cita;
+  renderConfirmacion(cita);
+  goToStep(4);
+}
+
+const CONVENIO_LABELS = { particular:'Particular', seguro:'Seguro Médico', empresa:'Convenio Empresarial' };
+const METODO_PAGO_LABELS = { tarjeta:'Tarjeta de crédito/débito', spei:'Transferencia SPEI', oxxo:'Pago en OXXO' };
+const PARENTESCO_LABELS = { hijo:'Hijo/a', padre:'Padre/Madre', esposo:'Esposo/a', otro:'Otro familiar' };
+
+function renderConfirmacion(cita){
+  const esEstudio = cita.tipoServicio === 'estudio';
+  const nombrePaciente = cita.paciente.nombre + (cita.paciente.paraQuien === 'familiar' ? ' (' + PARENTESCO_LABELS[cita.paciente.parentesco] + ' del titular)' : '');
+  document.getElementById('folioOut').textContent = cita.folio;
+  document.getElementById('resumenCita').innerHTML =
+    fila('Paciente', nombrePaciente) +
+    fila(esEstudio ? 'Estudio' : 'Médico', cita.doctor.nombre) +
+    fila(esEstudio ? 'Tipo' : 'Especialidad', cita.especialidad) +
+    fila('Sede', sedeDot(cita.sede) + cita.sede) +
+    fila('Fecha', cita.fecha) +
+    fila('Hora', cita.hora) +
+    fila('Costo aproximado', formatoMXN(cita.precioAprox) + ' (precio particular, antes de descuento por convenio)') +
+    fila('Convenio', CONVENIO_LABELS[cita.paciente.convenio] + (cita.paciente.convenioExtra ? ' &mdash; ' + cita.paciente.convenioExtra : '')) +
+    (cita.paciente.socioChristus ? fila('Socio CHRISTUS', cita.paciente.socioMembresiaValidada
+        ? '<i class="fa-solid fa-circle-check" style="color:var(--cm-success);"></i> Membresía identificada &mdash; precio preferente aplicado'
+        : '<i class="fa-solid fa-triangle-exclamation" style="color:var(--cm-warning);"></i> Por confirmar en unidad el día de la cita') : '') +
+    (cita.paciente.esExtranjero ? fila('Documento de identidad', (cita.paciente.docIdentidad || '—') + (cita.paciente.paisOrigen ? ' &mdash; ' + cita.paciente.paisOrigen : '')) : '') +
+    fila('Método de pago', METODO_PAGO_LABELS[cita.paciente.metodoPago]) +
+    filaSalud(cita.paciente.salud);
+
+  const prepHtml = (esEstudio && cita.doctor.estudioRef)
+    ? '<div class="preparacion-box"><i class="fa-solid fa-triangle-exclamation"></i><div><strong>Recuerda la preparación:</strong> ' + cita.doctor.estudioRef.preparacion + '</div></div>'
+    : '';
+  document.getElementById('prepNote').innerHTML = prepHtml;
+
+  document.getElementById('notifyNote').innerHTML =
+    '<i class="fa-solid fa-circle-info"></i> Hemos enviado la confirmación de tu cita al correo <strong>' + cita.paciente.correo + '</strong> y por SMS al <strong>' + cita.paciente.telefono + '</strong>' +
+    (cita.paciente.whatsapp ? ' <i class="fa-brands fa-whatsapp" style="color:#25D366;"></i> y también por WhatsApp' : '') + '.';
+  document.getElementById('facturaFolioRef').textContent = cita.folio;
+}
+
+function fila(label, valor){
+  return '<div class="summary-row"><span class="label">' + label + '</span><span class="value">' + valor + '</span></div>';
+}
+
+function filaSalud(salud){
+  if(!salud) return '';
+  const partes = [];
+  if(salud.medicamentos) partes.push('Medicamentos: ' + salud.medicamentos);
+  if(salud.alergias) partes.push('Alergias: ' + salud.alergias);
+  if(salud.cronicas) partes.push('Padecimientos: ' + salud.cronicas);
+  if(salud.motivo) partes.push('Motivo: ' + salud.motivo);
+  if(!partes.length) return '';
+  return fila('Información de salud', partes.join(' · '));
+}
+
+function descargarICS(){
+  const cita = booking.ultimaCita;
+  if(!cita) return;
+  const ics = [
+    'BEGIN:VCALENDAR','VERSION:2.0','BEGIN:VEVENT',
+    'SUMMARY:Cita médica - ' + cita.especialidad + ' (' + cita.doctor.nombre + ')',
+    'DESCRIPTION:Folio ' + cita.folio + ' - CHRISTUS MUGUERZA. Sede: ' + cita.sede,
+    'LOCATION:' + cita.sede,
+    'END:VEVENT','END:VCALENDAR'
+  ].join('\r\n');
+  const blob = new Blob([ics], {type:'text/calendar'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'Cita_' + cita.folio + '.ics';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Archivo de calendario descargado.');
+}
+
+/* ============ MIS CITAS ============ */
+function renderCitas(){
+  const cont = document.getElementById('citas-list');
+  if(citas.length === 0){
+    cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-calendar-xmark"></i><div>No tienes citas programadas.</div></div>';
+    return;
+  }
+  cont.innerHTML = citas.map(c => {
+    const statusLabel = c.status === 'confirmada' ? 'Confirmada' : (c.status === 'reprogramada' ? 'Reprogramada' : 'Cancelada');
+    const statusClass = 'status-badge-' + c.status;
+    const acciones = c.status !== 'cancelada'
+      ? '<button class="btn btn-secondary" onclick="abrirReprogramar(' + c.id + ')"><i class="fa-solid fa-pen"></i> Reprogramar</button>' +
+        '<button class="btn btn-danger-outline" onclick="abrirCancelar(' + c.id + ')"><i class="fa-solid fa-xmark"></i> Cancelar</button>'
+      : '';
+    const esEstudio = c.tipoServicio === 'estudio';
+    const avatarHtml = esEstudio
+      ? '<div class="avatar"><i class="fa-solid fa-' + (c.doctor.estudioRef && c.doctor.estudioRef.categoria === 'imagen' ? 'x-ray' : 'flask') + '"></i></div>'
+      : '<div class="avatar">' + initials(c.doctor.nombre) + '</div>';
+    return '<div class="cita-card ' + (c.status==='cancelada'?'cancelada':'') + '">' +
+      avatarHtml +
+      '<div class="cita-main">' +
+        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">' +
+          '<h4>' + c.doctor.nombre + '</h4>' +
+          '<span class="badge ' + statusClass + '">' + statusLabel + '</span>' +
+        '</div>' +
+        (c.paciente.paraQuien === 'familiar'
+          ? '<div class="meta-line"><i class="fa-solid fa-user-group"></i> Para: ' + c.paciente.nombre + ' (' + PARENTESCO_LABELS[c.paciente.parentesco] + ')</div>'
+          : '') +
+        '<div class="meta-line"><i class="fa-solid fa-' + (esEstudio ? 'flask' : 'stethoscope') + '"></i> ' + c.especialidad + '</div>' +
+        '<div class="meta-line">' + sedeDot(c.sede) + c.sede + '</div>' +
+        '<div class="meta-line"><i class="fa-solid fa-calendar"></i> ' + c.fecha + ' &mdash; ' + c.hora + '</div>' +
+        '<div class="meta-line"><i class="fa-solid fa-ticket"></i> Folio: ' + c.folio + '</div>' +
+        '<div class="convenio-badges"><span class="convenio-badge">' + CONVENIO_LABELS[c.paciente.convenio] + '</span></div>' +
+      '</div>' +
+      '<div class="cita-actions">' + acciones + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function cambiarTabCitas(tab){
+  document.getElementById('tabProximas').classList.toggle('active', tab === 'proximas');
+  document.getElementById('tabExpediente').classList.toggle('active', tab === 'expediente');
+  document.getElementById('panelProximas').classList.toggle('hidden', tab !== 'proximas');
+  document.getElementById('panelExpediente').classList.toggle('hidden', tab !== 'expediente');
+  if(tab === 'expediente') renderExpediente();
+}
+
+function renderExpediente(){
+  const cont = document.getElementById('expediente-list');
+  if(HISTORIAL_MOCK.length === 0){
+    cont.innerHTML = '<div class="empty-state"><i class="fa-solid fa-folder-open"></i><div>Aún no tienes historial registrado.</div></div>';
+    return;
+  }
+  cont.innerHTML = HISTORIAL_MOCK.map(h => {
+    const esEstudio = h.tipo === 'estudio';
+    const avatarHtml = esEstudio
+      ? '<div class="avatar"><i class="fa-solid fa-' + (h.categoria === 'imagen' ? 'x-ray' : 'flask') + '"></i></div>'
+      : '<div class="avatar">' + initials(h.nombre) + '</div>';
+    const botonResultado = h.resultadoDisponible
+      ? '<button class="btn btn-secondary" onclick="verResultado(\'' + h.folio + '\')"><i class="fa-solid fa-file-medical"></i> Ver resultados</button>'
+      : '';
+    const calificacionHtml = h.calificacion
+      ? '<div class="estrellas-readonly">' + renderEstrellasHtml(h.calificacion) + '</div>' +
+        (h.comentario ? '<div class="comentario-paciente">&ldquo;' + h.comentario + '&rdquo;</div>' : '')
+      : '<button class="btn btn-text" onclick="abrirCalificacion(\'' + h.folio + '\')"><i class="fa-solid fa-star"></i> Calificar atención</button>';
+    return '<div class="cita-card">' +
+      avatarHtml +
+      '<div class="cita-main">' +
+        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">' +
+          '<h4>' + h.nombre + '</h4>' +
+          '<span class="badge status-badge-confirmada">Completada</span>' +
+        '</div>' +
+        '<div class="meta-line"><i class="fa-solid fa-' + (esEstudio ? 'flask' : 'stethoscope') + '"></i> ' + (esEstudio ? (h.categoria === 'imagen' ? 'Estudio de Imagen' : 'Estudio de Laboratorio') : h.especialidad) + '</div>' +
+        '<div class="meta-line">' + sedeDot(h.sede) + h.sede + '</div>' +
+        '<div class="meta-line"><i class="fa-solid fa-calendar"></i> ' + h.fecha + '</div>' +
+        '<div class="meta-line"><i class="fa-solid fa-ticket"></i> Folio: ' + h.folio + '</div>' +
+        calificacionHtml +
+      '</div>' +
+      '<div class="cita-actions">' + botonResultado + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function renderEstrellasHtml(n){
+  let html = '';
+  for(let i = 1; i <= 5; i++){
+    html += '<i class="fa-solid fa-star' + (i > n ? ' vacia' : '') + '"></i>';
+  }
+  return html;
+}
+
+let calificacionEstrellas = 0;
+
+function abrirCalificacion(folio){
+  modalContext = folio;
+  calificacionEstrellas = 0;
+  const h = HISTORIAL_MOCK.find(x => x.folio === folio);
+  document.getElementById('modalBox').className = 'modal';
+  document.getElementById('modalBox').innerHTML =
+    '<h3><i class="fa-solid fa-star"></i> Califica tu atención</h3>' +
+    '<p>' + h.nombre + ' &mdash; ' + h.fecha + '</p>' +
+    '<div class="estrellas-selector" id="estrellasSelector">' +
+      [1,2,3,4,5].map(n => '<i class="fa-solid fa-star estrella" data-valor="' + n + '" onclick="elegirEstrellas(' + n + ')"></i>').join('') +
+    '</div>' +
+    '<div class="form-group"><label for="comentarioCalificacion">Comentarios (opcional)</label><textarea id="comentarioCalificacion" rows="3" placeholder="Cuéntanos cómo fue tu experiencia"></textarea></div>' +
+    '<div class="btn-row"><button class="btn btn-text" onclick="closeModal()">Cancelar</button><button class="btn btn-primary" onclick="enviarCalificacion()">Enviar calificación</button></div>';
+  document.getElementById('modalOverlay').classList.remove('hidden');
+}
+
+function elegirEstrellas(n){
+  calificacionEstrellas = n;
+  document.querySelectorAll('#estrellasSelector .estrella').forEach(el => {
+    el.classList.toggle('activa', parseInt(el.dataset.valor, 10) <= n);
+  });
+}
+
+function enviarCalificacion(){
+  if(calificacionEstrellas === 0){ showToast('Selecciona al menos 1 estrella.'); return; }
+  const h = HISTORIAL_MOCK.find(x => x.folio === modalContext);
+  h.calificacion = calificacionEstrellas;
+  h.comentario = document.getElementById('comentarioCalificacion').value.trim();
+  closeModal();
+  renderExpediente();
+  showToast('¡Gracias por tu calificación!');
+}
+
+function verResultado(folio){
+  const h = HISTORIAL_MOCK.find(x => x.folio === folio);
+  document.getElementById('modalBox').className = 'modal';
+  document.getElementById('modalBox').innerHTML =
+    '<h3><i class="fa-solid fa-file-medical"></i> Resultado &mdash; ' + h.nombre + '</h3>' +
+    '<p><strong>Folio:</strong> ' + h.folio + ' &nbsp;|&nbsp; <strong>Fecha:</strong> ' + h.fecha + '</p>' +
+    '<div class="notify-note"><i class="fa-solid fa-circle-check"></i> Resultado disponible. Valores dentro de rango normal. (Contenido simulado para este prototipo &mdash; en producción se integraría con el portal real de resultados de CHRISTUS MUGUERZA.)</div>' +
+    '<div class="btn-row"><button class="btn btn-secondary" onclick="showToast(\'Descarga simulada en este prototipo.\')"><i class="fa-solid fa-download"></i> Descargar PDF</button><button class="btn btn-primary" onclick="closeModal()">Cerrar</button></div>';
+  document.getElementById('modalOverlay').classList.remove('hidden');
+}
+
+/* ============ MODALES: CANCELAR / REPROGRAMAR ============ */
+function closeModal(){
+  document.getElementById('modalOverlay').classList.add('hidden');
+  modalContext = null;
+}
+
+function abrirCancelar(citaId){
+  const cita = citas.find(c => c.id === citaId);
+  modalContext = citaId;
+  document.getElementById('modalBox').className = 'modal';
+  document.getElementById('modalBox').innerHTML =
+    '<h3><i class="fa-solid fa-triangle-exclamation"></i> Cancelar cita</h3>' +
+    '<p>¿Estás seguro de cancelar tu cita con <strong>' + cita.doctor.nombre + '</strong> el ' + cita.fecha + ' a las ' + cita.hora + '? Esta acción no se puede deshacer.</p>' +
+    '<div class="btn-row">' +
+      '<button class="btn btn-text" onclick="closeModal()">No, regresar</button>' +
+      '<button class="btn btn-danger" onclick="confirmarCancelacion()">Sí, cancelar cita</button>' +
+    '</div>';
+  document.getElementById('modalOverlay').classList.remove('hidden');
+}
+
+function confirmarCancelacion(){
+  const cita = citas.find(c => c.id === modalContext);
+  cita.status = 'cancelada';
+  closeModal();
+  renderCitas();
+  showToast('Tu cita ha sido cancelada.');
+}
+
+function abrirReprogramar(citaId){
+  const cita = citas.find(c => c.id === citaId);
+  modalContext = citaId;
+  cita.doctor.horarios = cita.doctor.horarios || generarHorarios(cita.doctor.id);
+
+  const dayTabsHtml = cita.doctor.horarios.slice(0, 7).map((d,i) =>
+    '<div class="day-tab' + (i===0?' active':'') + (d.nivel===0?' taken':'') + '" data-mi="' + i + '" onclick="cambiarDiaModal(' + i + ')">' + d.dia.label + '</div>'
+  ).join('');
+
+  document.getElementById('modalBox').className = 'modal';
+  document.getElementById('modalBox').innerHTML =
+    '<h3><i class="fa-solid fa-calendar-pen"></i> Reprogramar cita</h3>' +
+    '<p>Selecciona una nueva fecha y hora para tu cita con <strong>' + cita.doctor.nombre + '</strong>.</p>' +
+    '<div class="day-tabs" id="modalDayTabs">' + dayTabsHtml + '</div>' +
+    '<div class="slots-grid" id="modalSlotsGrid"></div>' +
+    '<div class="btn-row">' +
+      '<button class="btn btn-text" onclick="closeModal()">Cancelar</button>' +
+      '<button class="btn btn-primary" id="btnConfirmarReprog" disabled onclick="confirmarReprogramacion()">Confirmar nuevo horario</button>' +
+    '</div>';
+  document.getElementById('modalOverlay').classList.remove('hidden');
+  window._modalDayIndex = 0;
+  window._modalSlot = null;
+  renderSlotsModal(cita);
+}
+
+function cambiarDiaModal(i){
+  window._modalDayIndex = i;
+  window._modalSlot = null;
+  document.getElementById('btnConfirmarReprog').disabled = true;
+  document.querySelectorAll('#modalDayTabs .day-tab').forEach((el,idx) => el.classList.toggle('active', idx===i));
+  const cita = citas.find(c => c.id === modalContext);
+  renderSlotsModal(cita);
+}
+
+function renderSlotsModal(cita){
+  const dia = cita.doctor.horarios[window._modalDayIndex];
+  document.getElementById('modalSlotsGrid').innerHTML = dia.slots.map(s => {
+    if(s.taken) return '<div class="slot-btn taken">' + s.hora + '</div>';
+    const selected = window._modalSlot === s.hora;
+    return '<div class="slot-btn' + (selected?' selected':'') + '" onclick="elegirSlotModal(\'' + s.hora + '\')">' + s.hora + '</div>';
+  }).join('');
+}
+
+function elegirSlotModal(hora){
+  window._modalSlot = hora;
+  const cita = citas.find(c => c.id === modalContext);
+  document.getElementById('btnConfirmarReprog').disabled = false;
+  renderSlotsModal(cita);
+}
+
+function confirmarReprogramacion(){
+  const cita = citas.find(c => c.id === modalContext);
+  const dia = cita.doctor.horarios[window._modalDayIndex];
+  cita.fecha = dia.dia.label;
+  cita.hora = window._modalSlot;
+  cita.status = 'reprogramada';
+  closeModal();
+  renderCitas();
+  showToast('Tu cita fue reprogramada exitosamente.');
+}
+
+/* ============ AYUDA: CHATBOT + REGRESAR DE FASE ============ */
+const CHAT_RESPUESTAS = [
+  { keys: ['cancel'], texto: 'Puedes cancelar tu cita desde "Mis Citas", con el botón Cancelar junto a la cita.' },
+  { keys: ['reprogram'], texto: 'En "Mis Citas" encontrarás el botón "Reprogramar" para elegir una nueva fecha y hora.' },
+  { keys: ['agend', 'cita nueva', 'nueva cita'], texto: 'Para agendar, ve a Inicio y da clic en "Agendar Consulta". Te pediremos especialidad, sede y horario.' },
+  { keys: ['identificac', 'expediente', 'curp', 'primera vez'], texto: 'Si es tu primera vez con nosotros, no necesitas expediente: usa tu CURP o identificación oficial y crearemos tu expediente automáticamente.' },
+  { keys: ['convenio', 'seguro', 'aseguradora'], texto: 'Particular es pago directo, Seguro Médico es tu aseguradora (ej. GNP, AXA) y Convenio Empresarial es el acuerdo de tu empresa con CHRISTUS MUGUERZA.' },
+  { keys: ['telemedicina', 'virtual'], texto: 'La consulta por telemedicina está fuera del alcance de este prototipo; por ahora solo cubrimos consultas presenciales.' },
+  { keys: ['horario', 'cupo', 'disponib'], texto: 'La disponibilidad de horarios se muestra en tiempo real al elegir especialidad y médico en el paso de Búsqueda.' }
+];
+
+const CHAT_QUICK_OPTIONS = [
+  '¿Cómo agendo una cita?',
+  '¿Cómo cancelo o reprogramo?',
+  '¿Qué identificación necesito?',
+  'Convenios y tipos de seguro',
+  '¿Qué pasa con la telemedicina?'
+];
+
+let chatHistory = [
+  { type: 'menu', who: 'bot', texto: '¡Hola! Soy el Asistente Virtual de CHRISTUS MUGUERZA. Puedo ayudarte con estos temas, o escribe tu propia pregunta:' }
+];
+
+function respuestaBot(msg){
+  const m = msg.toLowerCase();
+  const match = CHAT_RESPUESTAS.find(r => r.keys.some(k => m.includes(k)));
+  return match ? match.texto : 'Gracias por tu mensaje. Para una atención más detallada, comunícate al 81 8000 0000.';
+}
+
+function renderChatMsgDOM(box, m){
+  const div = document.createElement('div');
+  if(m.type === 'menu'){
+    div.className = 'chat-msg bot chat-menu';
+    div.innerHTML = '<div class="chat-menu-title">' + m.texto + '</div>' +
+      CHAT_QUICK_OPTIONS.map(q => '<button onclick="quickAsk(\'' + q.replace(/'/g, "\\'") + '\')">' + q + ' <i class="fa-solid fa-chevron-right"></i></button>').join('');
+  } else {
+    div.className = 'chat-msg ' + m.who;
+    div.textContent = m.texto;
+  }
+  box.appendChild(div);
+}
+
+function appendChatMsg(texto, who){
+  const m = { type: 'text', who: who, texto: texto };
+  chatHistory.push(m);
+  const box = document.getElementById('chatBox');
+  if(!box) return;
+  renderChatMsgDOM(box, m);
+  box.scrollTop = box.scrollHeight;
+}
+
+function enviarChat(){
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if(!msg) return;
+  appendChatMsg(msg, 'user');
+  input.value = '';
+  setTimeout(() => appendChatMsg(respuestaBot(msg), 'bot'), 450);
+}
+
+function quickAsk(texto){
+  appendChatMsg(texto, 'user');
+  setTimeout(() => appendChatMsg(respuestaBot(texto), 'bot'), 400);
+}
+
+function chatKeydown(e){
+  if(e.key === 'Enter'){ e.preventDefault(); enviarChat(); }
+}
+
+function volverFaseAnterior(){
+  closeModal();
+  if(currentStepNum === 3){
+    volverASeleccion();
+  } else if(currentStepNum > 1){
+    goToStep(currentStepNum - 1);
+  }
+}
+
+function openHelp(){
+  const enWizard = !document.getElementById('page-wizard').classList.contains('hidden');
+  const botonRegresar = (enWizard && currentStepNum > 1)
+    ? '<button class="btn btn-secondary" onclick="volverFaseAnterior()" style="width:100%;margin-bottom:14px;"><i class="fa-solid fa-rotate-left"></i> Regresar al paso anterior</button>'
+    : '';
+
+  document.getElementById('modalBox').className = 'modal modal-wide';
+  document.getElementById('modalBox').innerHTML =
+    '<h3><i class="fa-solid fa-headset"></i> Asistente Virtual CHRISTUS MUGUERZA</h3>' +
+    '<div class="chat-box" id="chatBox"></div>' +
+    '<div class="chat-input-row">' +
+      '<input type="text" id="chatInput" placeholder="Escribe tu pregunta..." onkeydown="chatKeydown(event)">' +
+      '<button class="btn btn-primary" onclick="enviarChat()"><i class="fa-solid fa-paper-plane"></i></button>' +
+    '</div>' +
+    '<div class="modal-divider"></div>' +
+    '<div class="contact-line"><i class="fa-solid fa-phone"></i> Línea de atención: <strong>81 8000 0000</strong></div>' +
+    botonRegresar +
+    '<div class="btn-row"><button class="btn btn-text" onclick="closeModal()">Cerrar</button></div>';
+
+  const box = document.getElementById('chatBox');
+  chatHistory.forEach(m => renderChatMsgDOM(box, m));
+  box.scrollTop = box.scrollHeight;
+
+  document.getElementById('modalOverlay').classList.remove('hidden');
+  document.getElementById('chatInput').focus();
+}
+
+/* ============ INIT ============ */
+poblarSelects();
+</script>
+</body>
+</html>

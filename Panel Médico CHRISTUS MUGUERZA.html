@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Médico | CHRISTUS MUGUERZA</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{
+  --cm-purple:#6B2D8B;
+  --cm-purple-dark:#4A1E61;
+  --cm-purple-light:#EDE4F3;
+  --cm-purple-mid:#9B5DC0;
+  --cm-gray:#F5F5F5;
+  --cm-border:#D9CCDE;
+  --cm-text:#2C2C2A;
+  --cm-muted:#6B6B6B;
+  --cm-error:#C0392B;
+  --cm-error-bg:#FDEEEC;
+  --cm-success:#1a7a4a;
+  --cm-success-bg:#EAF5EE;
+  --cm-warning:#9c6b00;
+  --cm-warning-bg:#FFF8E1;
+  --cm-white:#ffffff;
+  --sidebar-w:240px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#F0EBF5;color:var(--cm-text);display:flex;flex-direction:column;min-height:100vh;}
+.hidden{display:none !important;}
+a{color:var(--cm-purple);text-decoration:none;}
+
+/* ===== HEADER ===== */
+.app-header{background:var(--cm-white);border-bottom:3px solid var(--cm-purple);position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:60px;gap:16px;}
+.brand{display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none;}
+.brand-logo{height:38px;width:auto;}
+.brand-text strong{display:block;color:var(--cm-purple-dark);font-size:14px;line-height:1.2;}
+.brand-text span{display:block;color:var(--cm-muted);font-size:11px;}
+.header-center{flex:1;display:flex;align-items:center;justify-content:center;gap:12px;}
+.badge-panel{background:var(--cm-purple-light);color:var(--cm-purple-dark);font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;}
+.header-right{display:flex;align-items:center;gap:12px;}
+.clock{font-size:14px;font-weight:700;color:var(--cm-purple-dark);min-width:72px;text-align:right;}
+.doctor-selector{display:flex;align-items:center;gap:8px;background:var(--cm-gray);border:1px solid var(--cm-border);border-radius:8px;padding:5px 10px;cursor:pointer;}
+.doctor-selector select{border:none;background:transparent;font-family:inherit;font-size:13px;color:var(--cm-text);cursor:pointer;max-width:200px;}
+.doctor-selector select:focus{outline:none;}
+.link-paciente{font-size:12px;font-weight:600;color:var(--cm-purple);background:var(--cm-purple-light);padding:5px 12px;border-radius:6px;white-space:nowrap;}
+.link-paciente:hover{background:var(--cm-purple);color:#fff;}
+
+/* ===== LAYOUT ===== */
+.app-body{display:flex;flex:1;}
+
+.sidebar{width:var(--sidebar-w);background:var(--cm-purple-dark);flex-shrink:0;display:flex;flex-direction:column;padding-top:16px;}
+.sidebar-section{padding:6px 0;}
+.sidebar-label{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:rgba(255,255,255,.45);padding:4px 18px 6px;}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13.5px;color:rgba(255,255,255,.78);cursor:pointer;border-left:3px solid transparent;transition:.15s;}
+.sidebar-item i{width:18px;text-align:center;font-size:14px;}
+.sidebar-item:hover{background:rgba(255,255,255,.08);color:#fff;}
+.sidebar-item.active{background:rgba(255,255,255,.13);color:#fff;border-left-color:#fff;}
+.sidebar-item .badge-count{margin-left:auto;background:var(--cm-error);color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:20px;min-width:20px;text-align:center;}
+.sidebar-item .badge-ok{margin-left:auto;background:var(--cm-success);color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:20px;}
+.sidebar-footer{margin-top:auto;padding:16px 18px;border-top:1px solid rgba(255,255,255,.12);}
+.sidebar-footer p{font-size:11px;color:rgba(255,255,255,.4);line-height:1.5;}
+
+.main-content{flex:1;min-width:0;padding:20px 24px;overflow-y:auto;}
+
+/* ===== VIEWS ===== */
+.view-section{display:none;}
+.view-section.active{display:block;}
+
+/* ===== STAT CARDS ===== */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+.stat-card{background:var(--cm-white);border:1px solid var(--cm-border);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:4px;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:4px;}
+.stat-card.c-hoy::before{background:var(--cm-purple);}
+.stat-card.c-espera::before{background:var(--cm-warning);}
+.stat-card.c-comp::before{background:var(--cm-success);}
+.stat-card.c-cancel::before{background:var(--cm-error);}
+.stat-label{font-size:12px;color:var(--cm-muted);font-weight:600;text-transform:uppercase;letter-spacing:.3px;}
+.stat-value{font-size:28px;font-weight:800;color:var(--cm-purple-dark);line-height:1;}
+.stat-sub{font-size:12px;color:var(--cm-muted);}
+
+/* ===== SECTION HEADERS ===== */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.section-title{font-size:16px;font-weight:700;color:var(--cm-purple-dark);display:flex;align-items:center;gap:8px;}
+.section-title i{color:var(--cm-purple-mid);}
+
+/* ===== AGENDA DEL DÍA ===== */
+.agenda-grid{display:flex;flex-direction:column;gap:6px;}
+.time-slot-row{display:flex;align-items:stretch;gap:0;border:1px solid var(--cm-border);border-radius:8px;background:#fff;overflow:hidden;transition:box-shadow .15s;}
+.time-slot-row.slot-libre{border-style:dashed;background:#fafafa;}
+.time-slot-row.slot-libre .slot-time{background:#f7f7f7;}
+.slot-time{width:72px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--cm-purple-light);padding:10px 8px;font-weight:700;color:var(--cm-purple-dark);font-size:13px;border-right:1px solid var(--cm-border);}
+.slot-time span{font-size:10px;font-weight:400;color:var(--cm-muted);}
+.slot-content{flex:1;min-width:0;padding:10px 14px;display:flex;align-items:center;gap:14px;}
+.slot-libre-label{color:var(--cm-muted);font-size:13px;font-style:italic;}
+.slot-libre-badge{background:var(--cm-success-bg);color:var(--cm-success);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+.slot-libre-badge.liberado{background:var(--cm-purple-light);color:var(--cm-purple-dark);}
+.patient-name{font-weight:700;color:var(--cm-text);font-size:14px;margin-bottom:2px;}
+.patient-meta{font-size:12px;color:var(--cm-muted);}
+.appt-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px;}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;}
+.badge-programada{background:#EEF2FF;color:#3730A3;}
+.badge-confirmada{background:#ECFDF5;color:#065F46;}
+.badge-espera{background:var(--cm-warning-bg);color:var(--cm-warning);}
+.badge-en-consulta{background:var(--cm-purple-light);color:var(--cm-purple-dark);}
+.badge-completada{background:var(--cm-success-bg);color:var(--cm-success);}
+.badge-cancelada{background:var(--cm-error-bg);color:var(--cm-error);}
+.badge-no-show{background:#F3F4F6;color:#6B7280;}
+.badge-tipo{background:var(--cm-gray);color:var(--cm-text);}
+.badge-urgente{background:#FEF2F2;color:#991B1B;animation:pulsar 1.4s infinite;}
+@keyframes pulsar{0%,100%{opacity:1;}50%{opacity:.6;}}
+.slot-actions{margin-left:auto;display:flex;gap:6px;flex-shrink:0;}
+
+/* ===== BUTTONS ===== */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:6px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;}
+.btn-primary{background:var(--cm-purple);color:#fff;}
+.btn-primary:hover{background:var(--cm-purple-dark);}
+.btn-secondary{background:#fff;color:var(--cm-purple);border:1px solid var(--cm-purple);}
+.btn-secondary:hover{background:var(--cm-purple-light);}
+.btn-success{background:var(--cm-success);color:#fff;}
+.btn-success:hover{filter:brightness(.9);}
+.btn-warning{background:var(--cm-warning);color:#fff;}
+.btn-danger{background:var(--cm-error);color:#fff;}
+.btn-danger:hover{filter:brightness(.9);}
+.btn-ghost{background:transparent;color:var(--cm-muted);border:1px solid var(--cm-border);}
+.btn-ghost:hover{background:var(--cm-gray);}
+.btn-sm{padding:5px 10px;font-size:12px;}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ===== SALA DE ESPERA ===== */
+.espera-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:24px;}
+.espera-card{background:#fff;border:1px solid var(--cm-border);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px;position:relative;}
+.espera-card.urgente{border-color:var(--cm-error);box-shadow:0 0 0 2px rgba(192,57,43,.15);}
+.espera-card.en-consulta-card{border-color:var(--cm-purple);background:var(--cm-purple-light);}
+.espera-avatar{width:46px;height:46px;border-radius:50%;background:var(--cm-purple-light);color:var(--cm-purple-dark);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;}
+.espera-avatar.verde{background:var(--cm-success-bg);color:var(--cm-success);}
+.espera-card-top{display:flex;align-items:center;gap:12px;}
+.espera-info h4{font-size:14px;color:var(--cm-text);margin-bottom:2px;}
+.espera-info p{font-size:12px;color:var(--cm-muted);}
+.espera-wait{font-size:12px;font-weight:600;color:var(--cm-warning);}
+.espera-card-actions{display:flex;gap:8px;}
+
+/* ===== LISTA DE CITAS ===== */
+.cita-list{display:flex;flex-direction:column;gap:10px;}
+.cita-row{background:#fff;border:1px solid var(--cm-border);border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:14px;transition:box-shadow .15s;}
+.cita-row:hover{box-shadow:0 2px 10px rgba(107,45,139,.12);}
+.cita-fecha{display:flex;flex-direction:column;align-items:center;background:var(--cm-purple-light);color:var(--cm-purple-dark);border-radius:8px;padding:8px 12px;min-width:54px;text-align:center;flex-shrink:0;}
+.cita-fecha .dia{font-size:22px;font-weight:800;line-height:1;}
+.cita-fecha .mes{font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;}
+.cita-hora{font-size:12px;font-weight:700;color:var(--cm-muted);margin-top:2px;}
+.cita-info{flex:1;min-width:0;}
+.cita-info h4{font-size:14px;font-weight:700;color:var(--cm-text);margin-bottom:3px;}
+.cita-info p{font-size:12.5px;color:var(--cm-muted);}
+.cita-countdown{font-size:12px;font-weight:700;color:var(--cm-warning);background:var(--cm-warning-bg);padding:4px 10px;border-radius:20px;white-space:nowrap;}
+.cita-countdown.rojo{color:var(--cm-error);background:var(--cm-error-bg);}
+.cita-actions{display:flex;gap:6px;flex-shrink:0;}
+
+/* ===== MODAL ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:200;}
+.modal-overlay.hidden{display:none;}
+.modal{background:#fff;border-radius:12px;padding:24px;max-width:520px;width:90%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,.3);}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.modal-header h3{font-size:17px;color:var(--cm-purple-dark);}
+.modal-close{background:none;border:none;color:var(--cm-muted);font-size:20px;cursor:pointer;padding:2px;}
+.modal-close:hover{color:var(--cm-text);}
+.modal-section{margin-bottom:16px;}
+.modal-section label{display:block;font-size:12px;font-weight:700;color:var(--cm-muted);letter-spacing:.3px;text-transform:uppercase;margin-bottom:4px;}
+.modal-section p{font-size:14px;color:var(--cm-text);}
+.modal-section .highlight{font-weight:700;color:var(--cm-purple-dark);}
+.modal-divider{border:none;border-top:1px solid var(--cm-border);margin:16px 0;}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;}
+.info-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.info-box{background:var(--cm-gray);border-radius:6px;padding:10px 12px;}
+.info-box label{font-size:11px;color:var(--cm-muted);font-weight:600;display:block;margin-bottom:2px;}
+.info-box p{font-size:13.5px;font-weight:600;color:var(--cm-text);}
+
+/* ===== TOAST ===== */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--cm-purple-dark);color:#fff;padding:12px 20px;border-radius:8px;font-size:13.5px;max-width:360px;z-index:500;opacity:0;transform:translateY(12px);transition:all .3s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast.toast-success{background:var(--cm-success);}
+.toast.toast-warning{background:#7a5200;}
+.toast.toast-error{background:var(--cm-error);}
+
+/* ===== UPCOMING REMINDER BANNER ===== */
+.reminder-banner{background:linear-gradient(90deg,#7a5200,#9c6b00);color:#fff;border-radius:8px;padding:10px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;font-size:13px;}
+.reminder-banner i{font-size:16px;flex-shrink:0;}
+.reminder-banner strong{font-weight:700;}
+.reminder-banner.hidden{display:none;}
+
+/* ===== WEEK CALENDAR ===== */
+.week-header{display:grid;grid-template-columns:60px repeat(6,1fr);gap:1px;background:var(--cm-border);border-radius:8px 8px 0 0;overflow:hidden;}
+.week-header-cell{background:var(--cm-purple-dark);color:#fff;font-size:12px;font-weight:700;text-align:center;padding:8px 4px;}
+.week-header-cell.hoy{background:var(--cm-purple-mid);}
+.week-body{display:grid;grid-template-columns:60px repeat(6,1fr);gap:1px;background:var(--cm-border);border-radius:0 0 8px 8px;overflow:hidden;margin-bottom:24px;}
+.week-time{background:#f8f5fb;font-size:11px;color:var(--cm-muted);display:flex;align-items:center;justify-content:flex-end;padding:0 8px 0 0;min-height:52px;}
+.week-cell{background:#fff;padding:4px;min-height:52px;cursor:pointer;transition:background .1s;}
+.week-cell:hover{background:var(--cm-purple-light);}
+.week-cell.hoy{background:#F9F5FC;}
+.week-appt{background:var(--cm-purple);color:#fff;border-radius:4px;font-size:11px;padding:3px 6px;margin-bottom:2px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;cursor:pointer;}
+.week-appt.est{background:var(--cm-purple-mid);}
+.week-appt.cancelada-bg{background:var(--cm-muted);text-decoration:line-through;}
+.week-appt.completada-bg{background:var(--cm-success);}
+
+/* ===== HISTORIAL ===== */
+.hist-row{background:#fff;border:1px solid var(--cm-border);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.hist-icon{width:38px;height:38px;border-radius:50%;background:var(--cm-purple-light);color:var(--cm-purple-dark);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.hist-info{flex:1;min-width:0;}
+.hist-info h4{font-size:13.5px;font-weight:600;color:var(--cm-text);}
+.hist-info p{font-size:12px;color:var(--cm-muted);}
+.folio-tag{font-size:11px;background:var(--cm-gray);color:var(--cm-muted);padding:2px 8px;border-radius:10px;font-family:monospace;}
+
+/* ===== EMPTY STATE ===== */
+.empty{text-align:center;padding:40px 20px;color:var(--cm-muted);}
+.empty i{font-size:36px;color:var(--cm-border);display:block;margin-bottom:12px;}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .sidebar{width:56px;}
+  .sidebar-label,.sidebar-item span,.sidebar-footer{display:none;}
+  .sidebar-item{padding:12px 0;justify-content:center;border-left:none;border-bottom:3px solid transparent;}
+  .sidebar-item.active{border-bottom-color:#fff;background:rgba(255,255,255,.13);}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:600px){
+  .week-header,.week-body{grid-template-columns:40px repeat(6,1fr);}
+  .stats-row{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="app-header">
+  <a class="brand" href="index.html">
+    <img src="logo.jpg" class="brand-logo" alt="CHRISTUS MUGUERZA" onerror="this.style.display='none'">
+    <div class="brand-text">
+      <strong>CHRISTUS MUGUERZA</strong>
+      <span>Panel Médico &amp; Personal</span>
+    </div>
+  </a>
+
+  <div class="header-center">
+    <span class="badge-panel"><i class="fa-solid fa-user-doctor"></i> Vista de Personal Clínico</span>
+    <span id="portalCounter" class="badge-panel" style="background:var(--cm-success-bg);color:var(--cm-success);display:none;cursor:pointer;" onclick="sincronizarPortal()"></span>
+    <div id="reminderBannerTop" class="reminder-banner hidden">
+      <i class="fa-solid fa-bell"></i>
+      <span id="reminderBannerText"></span>
+    </div>
+  </div>
+
+  <div class="header-right">
+    <div class="doctor-selector">
+      <i class="fa-solid fa-user-doctor" style="color:var(--cm-purple-mid);font-size:14px;"></i>
+      <select id="doctorSelect" onchange="cambiarDoctor()">
+        <option value="">Seleccionar personal...</option>
+      </select>
+    </div>
+    <span class="clock" id="reloj">--:--</span>
+    <a class="link-paciente" href="index.html"><i class="fa-solid fa-arrow-left"></i> Portal Paciente</a>
+  </div>
+</header>
+
+<!-- ===== BODY ===== -->
+<div class="app-body">
+
+  <!-- ===== SIDEBAR ===== -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Agenda</div>
+      <div class="sidebar-item active" onclick="showView('v-dashboard')" id="nav-dashboard">
+        <i class="fa-solid fa-gauge-high"></i><span>Resumen</span>
+      </div>
+      <div class="sidebar-item" onclick="showView('v-agenda')" id="nav-agenda">
+        <i class="fa-solid fa-calendar-day"></i><span>Agenda del día</span>
+        <span class="badge-count" id="nav-badge-agenda">0</span>
+      </div>
+      <div class="sidebar-item" onclick="showView('v-semana')" id="nav-semana">
+        <i class="fa-solid fa-calendar-week"></i><span>Vista semanal</span>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Pacientes</div>
+      <div class="sidebar-item" onclick="showView('v-espera')" id="nav-espera">
+        <i class="fa-solid fa-chair"></i><span>Sala de espera</span>
+        <span class="badge-count" id="nav-badge-espera">0</span>
+      </div>
+      <div class="sidebar-item" onclick="showView('v-proximas')" id="nav-proximas">
+        <i class="fa-solid fa-clock"></i><span>Próximas citas</span>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Historial</div>
+      <div class="sidebar-item" onclick="showView('v-historial')" id="nav-historial">
+        <i class="fa-solid fa-file-medical"></i><span>Historial</span>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <p>Prototipo conceptual<br>CHRISTUS MUGUERZA<br>Uso interno &mdash; Confidencial</p>
+    </div>
+  </nav>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main-content">
+
+    <!-- == NO DOCTOR SELECTED == -->
+    <div id="v-nodoc" class="view-section active">
+      <div class="empty" style="margin-top:60px;">
+        <i class="fa-solid fa-user-doctor"></i>
+        <h3 style="color:var(--cm-purple-dark);margin-bottom:8px;">Selecciona tu perfil</h3>
+        <p>Elige un médico o personal en el selector de la barra superior para ver tu panel.</p>
+      </div>
+    </div>
+
+    <!-- == DASHBOARD == -->
+    <div id="v-dashboard" class="view-section">
+      <div class="section-header" style="margin-bottom:18px;">
+        <div>
+          <h2 id="dashTitle" style="color:var(--cm-purple-dark);font-size:20px;"></h2>
+          <p id="dashSubtitle" style="color:var(--cm-muted);font-size:13px;margin-top:2px;"></p>
+        </div>
+        <span id="dashFecha" style="font-size:13px;font-weight:600;color:var(--cm-muted);"></span>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card c-hoy">
+          <span class="stat-label"><i class="fa-solid fa-calendar-day"></i> Citas hoy</span>
+          <span class="stat-value" id="st-hoy">0</span>
+          <span class="stat-sub" id="st-hoy-sub"></span>
+        </div>
+        <div class="stat-card c-espera">
+          <span class="stat-label"><i class="fa-solid fa-chair"></i> En espera</span>
+          <span class="stat-value" id="st-espera">0</span>
+          <span class="stat-sub">pacientes en sala</span>
+        </div>
+        <div class="stat-card c-comp">
+          <span class="stat-label"><i class="fa-solid fa-circle-check"></i> Completadas</span>
+          <span class="stat-value" id="st-comp">0</span>
+          <span class="stat-sub">consultas atendidas hoy</span>
+        </div>
+        <div class="stat-card c-cancel">
+          <span class="stat-label"><i class="fa-solid fa-calendar-xmark"></i> Canceladas</span>
+          <span class="stat-value" id="st-cancel">0</span>
+          <span class="stat-sub" id="st-cancel-sub">cupos liberados hoy</span>
+        </div>
+      </div>
+
+      <!-- Próxima cita destacada -->
+      <div class="section-header"><div class="section-title"><i class="fa-solid fa-bell"></i> Próxima en agenda</div></div>
+      <div id="dashNextAppt" style="margin-bottom:24px;"></div>
+
+      <!-- Alertas de cancelaciones recientes -->
+      <div id="dashCancelaciones" style="margin-bottom:24px;"></div>
+
+      <!-- Resumen agenda del día -->
+      <div class="section-header">
+        <div class="section-title"><i class="fa-solid fa-calendar-day"></i> Agenda de hoy</div>
+        <button class="btn btn-secondary btn-sm" onclick="showView('v-agenda')"><i class="fa-solid fa-arrow-right"></i> Ver completa</button>
+      </div>
+      <div class="agenda-grid" id="dashAgenda"></div>
+    </div>
+
+    <!-- == AGENDA DEL DÍA == -->
+    <div id="v-agenda" class="view-section">
+      <div class="section-header">
+        <div class="section-title"><i class="fa-solid fa-calendar-day"></i> Agenda de hoy &mdash; <span id="agendaFechaLabel" style="font-weight:400;font-size:14px;"></span></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost btn-sm" onclick="showView('v-semana')"><i class="fa-solid fa-calendar-week"></i> Semana</button>
+        </div>
+      </div>
+      <div class="reminder-banner hidden" id="reminderBanner" style="margin-bottom:14px;">
+        <i class="fa-solid fa-bell"></i><span id="reminderText"></span>
+      </div>
+      <div class="agenda-grid" id="agendaFull"></div>
+    </div>
+
+    <!-- == VISTA SEMANAL == -->
+    <div id="v-semana" class="view-section">
+      <div class="section-header" style="margin-bottom:14px;">
+        <div class="section-title"><i class="fa-solid fa-calendar-week"></i> Semana actual</div>
+      </div>
+      <div class="week-header" id="weekHeader"></div>
+      <div class="week-body" id="weekBody"></div>
+    </div>
+
+    <!-- == SALA DE ESPERA == -->
+    <div id="v-espera" class="view-section">
+      <div class="section-header" style="margin-bottom:14px;">
+        <div class="section-title"><i class="fa-solid fa-chair"></i> Sala de espera</div>
+      </div>
+      <div id="enConsultaArea" style="margin-bottom:20px;"></div>
+      <div class="espera-grid" id="esperaGrid"></div>
+      <div id="esperaEmpty" class="empty hidden"><i class="fa-solid fa-couch"></i><p>No hay pacientes en sala en este momento.</p></div>
+    </div>
+
+    <!-- == PRÓXIMAS CITAS == -->
+    <div id="v-proximas" class="view-section">
+      <div class="section-header" style="margin-bottom:14px;">
+        <div class="section-title"><i class="fa-solid fa-clock"></i> Próximas citas</div>
+        <span style="font-size:12.5px;color:var(--cm-muted);">Los recordatorios se activan automáticamente a los 30 y 15 minutos.</span>
+      </div>
+      <div class="cita-list" id="proximasList"></div>
+      <div id="proximasEmpty" class="empty hidden"><i class="fa-solid fa-calendar-check"></i><p>Sin citas próximas pendientes.</p></div>
+    </div>
+
+    <!-- == HISTORIAL == -->
+    <div id="v-historial" class="view-section">
+      <div class="section-header" style="margin-bottom:14px;">
+        <div class="section-title"><i class="fa-solid fa-file-medical"></i> Historial de atenciones</div>
+      </div>
+      <div id="historialList"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ===== MODAL DETALLE CITA ===== -->
+<div class="modal-overlay hidden" id="modalOverlay">
+  <div class="modal" id="modalBox">
+    <div class="modal-header">
+      <h3 id="modalTitle">Detalle de cita</h3>
+      <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="modalBody"></div>
+    <hr class="modal-divider">
+    <div class="modal-actions" id="modalActions"></div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ======================================================
+   DATOS (espejean los del prototipo paciente)
+   ====================================================== */
+const ESPECIALIDADES = [
+  "Medicina Familiar","Cardiología","Pediatría","Ginecología y Obstetricia",
+  "Dermatología","Ortopedia y Traumatología","Endocrinología","Oftalmología",
+  "Cirugía General","Medicina Interna"
+];
+
+const UNIDADES = [
+  { nombre:"Hospital Alta Especialidad (Monterrey)", ciudad:"Monterrey" },
+  { nombre:"Hospital San Nicolás (San Nicolás de los Garza)", ciudad:"San Nicolás de los Garza" },
+  { nombre:"Hospital Conchita (Monterrey)", ciudad:"Monterrey" },
+  { nombre:"Hospital Sur (Monterrey)", ciudad:"Monterrey" },
+  { nombre:"Hospital Saltillo", ciudad:"Saltillo" },
+  { nombre:"Hospital Reynosa", ciudad:"Reynosa" },
+  { nombre:"Hospital Vidriera (Monterrey)", ciudad:"Monterrey" },
+  { nombre:"Hospital UPAEP (Puebla)", ciudad:"Puebla" },
+  { nombre:"Hospital Faro del Mayab (Mérida)", ciudad:"Mérida" },
+  { nombre:"Clínica San Pedro (San Pedro Garza García)", ciudad:"San Pedro Garza García" },
+  { nombre:"CAM Cumbres Leones (Monterrey)", ciudad:"Monterrey" },
+  { nombre:"CAM Santa Catarina", ciudad:"Santa Catarina" },
+  { nombre:"Hospital del Parque (Chihuahua)", ciudad:"Chihuahua" },
+  { nombre:"Hospital Cumbres (Monterrey)", ciudad:"Monterrey" },
+  { nombre:"Hospital Betania (Puebla)", ciudad:"Puebla" },
+  { nombre:"Hospital Altagracia (León)", ciudad:"León" },
+  { nombre:"Clínica Irapuato", ciudad:"Irapuato" }
+];
+
+const DOCTORS = [
+  {id:1, nombre:"Dra. Patricia Hinojosa Treviño", especialidad:"Medicina Familiar", sede:"Hospital Alta Especialidad (Monterrey)"},
+  {id:2, nombre:"Dr. Ricardo Salinas Cantú", especialidad:"Medicina Familiar", sede:"CAM Santa Catarina"},
+  {id:3, nombre:"Dra. Mariana Elizondo Garza", especialidad:"Cardiología", sede:"Hospital Alta Especialidad (Monterrey)"},
+  {id:4, nombre:"Dr. Eduardo Villarreal Cantú", especialidad:"Cardiología", sede:"Hospital Saltillo"},
+  {id:5, nombre:"Dra. Sofía Garza Longoria", especialidad:"Pediatría", sede:"Hospital Conchita (Monterrey)"},
+  {id:6, nombre:"Dr. Jorge Treviño Ramos", especialidad:"Pediatría", sede:"Hospital Reynosa"},
+  {id:7, nombre:"Dra. Carolina Reyes Benavides", especialidad:"Ginecología y Obstetricia", sede:"Hospital Sur (Monterrey)"},
+  {id:8, nombre:"Dr. Alberto Quintanilla Flores", especialidad:"Dermatología", sede:"Hospital Alta Especialidad (Monterrey)"},
+  {id:9, nombre:"Dra. Lucía Montemayor Cárdenas", especialidad:"Ortopedia y Traumatología", sede:"Hospital Saltillo"},
+  {id:10, nombre:"Dr. Fernando García Salinas", especialidad:"Endocrinología", sede:"Hospital Conchita (Monterrey)"},
+  {id:11, nombre:"Dra. Daniela Cantú Morales", especialidad:"Oftalmología", sede:"Hospital Reynosa"},
+  {id:12, nombre:"Dr. Hugo Benavides Treviño", especialidad:"Medicina Familiar", sede:"Hospital Sur (Monterrey)"},
+  {id:13, nombre:"Dra. Alejandra Ríos Domínguez", especialidad:"Cirugía General", sede:"Hospital Vidriera (Monterrey)"},
+  {id:14, nombre:"Dr. Manuel Cantú Saldaña", especialidad:"Medicina Interna", sede:"Hospital UPAEP (Puebla)"},
+  {id:15, nombre:"Dra. Renata Solís Pech", especialidad:"Ginecología y Obstetricia", sede:"Hospital Faro del Mayab (Mérida)"},
+  {id:16, nombre:"Dr. Joaquín Pérez Lara", especialidad:"Medicina Familiar", sede:"Clínica San Pedro (San Pedro Garza García)"},
+  {id:17, nombre:"Dra. Karla Mendoza Ibarra", especialidad:"Pediatría", sede:"CAM Cumbres Leones (Monterrey)"},
+  {id:18, nombre:"Dr. Sergio Villanueva Ortiz", especialidad:"Medicina Interna", sede:"Hospital San Nicolás (San Nicolás de los Garza)"},
+  {id:19, nombre:"Dra. Verónica Holguín Páez", especialidad:"Pediatría", sede:"Hospital del Parque (Chihuahua)"},
+  {id:20, nombre:"Dr. Raúl Ibarra Cantú", especialidad:"Cardiología", sede:"Hospital Cumbres (Monterrey)"},
+  {id:21, nombre:"Dra. Itzel Romero Vázquez", especialidad:"Ginecología y Obstetricia", sede:"Hospital Betania (Puebla)"},
+  {id:22, nombre:"Dr. Octavio Mendizábal Ruiz", especialidad:"Medicina Familiar", sede:"Hospital Altagracia (León)"},
+  {id:23, nombre:"Dra. Fernanda Aguilar Solano", especialidad:"Dermatología", sede:"Clínica Irapuato"}
+];
+
+/* Nombres de pacientes ficticios */
+const NOMBRES_PACIENTES = [
+  "Lucía Ramírez Ortega","Marco Hernández Vela","Ana Sofía Garza Ríos","Roberto Treviño Cruz",
+  "María Fernanda López","Carlos Ibarra Cantú","Valeria Solis Ponce","Jorge Montoya Acevedo",
+  "Diana Núñez Salinas","Andrés Cavazos Torres","Paulina Medina Flores","Óscar Villanueva Reyes",
+  "Camila Estrada García","Eduardo Morales Salas","Beatriz Olvera Castillo","Sebastián Alvarado Ruiz",
+  "Gabriela Cervantes Pino","Fernando Gutiérrez Mata","Daniela Arreola Soto","Miguel Rangel Paz",
+  "Isidro Pérez León","Natalia Castro Bravo","Ricardo Suárez Galindo"
+];
+
+const CONVENIOS_LABEL = { particular:"Particular", seguro:"Seguro Médico", empresa:"Convenio Empresarial" };
+const MESES_FULL = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+const MESES_CORTO = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+const DIAS_SEMANA = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+
+/* ======================================================
+   ESTADO GLOBAL
+   ====================================================== */
+let currentDoctorId = null;
+let citasData = [];   /* citas generadas para el doctor seleccionado */
+let selectedView = 'v-nodoc';
+let reminderInterval = null;
+let remindersFired = {};
+
+/* ======================================================
+   SEEDED RNG (mismo mulberry32 del prototipo)
+   ====================================================== */
+function mulberry32(seed){
+  return function(){
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* ======================================================
+   GENERACIÓN DE CITAS MOCK
+   ====================================================== */
+function generarCitas(doctorId){
+  const rand = mulberry32(doctorId * 9973);
+  const now = new Date();
+  const todayY = now.getFullYear();
+  const todayM = now.getMonth();
+  const todayD = now.getDate();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+
+  const horariosMañana = ["08:00","08:30","09:00","09:30","10:00","10:30","11:00","11:30","12:00"];
+  const horariosTarde  = ["13:00","13:30","14:00","16:00","16:30","17:00","17:00","17:30","18:00"];
+  const horariosTodos  = [...horariosMañana, ...horariosTarde];
+
+  const convenioOpts = ["particular","seguro","empresa"];
+  const tipoCita = ["consulta","consulta","consulta","estudio"];
+  const estudioNames = ["Biometría Hemática Completa","Química Sanguínea 27 Elem.","Radiografía de Tórax","Electrocardiograma","Ultrasonido Abdominal"];
+  const statusHoy = ["programada","confirmada","confirmada","espera","espera","en-consulta","completada","cancelada-paciente","no-show"];
+
+  const citas = [];
+  let id = 1;
+
+  /* --- CITAS DE HOY --- */
+  const usedHorasHoy = new Set();
+  const numHoy = 7 + Math.floor(rand() * 4); /* 7-10 citas hoy */
+  for(let i = 0; i < numHoy; i++){
+    let hora;
+    let tries = 0;
+    do { hora = horariosTodos[Math.floor(rand() * horariosTodos.length)]; tries++; } while(usedHorasHoy.has(hora) && tries < 30);
+    usedHorasHoy.add(hora);
+
+    const [h, m] = hora.split(':').map(Number);
+    const citaMin = h * 60 + m;
+    let status;
+    if(citaMin < nowMin - 45) {
+      status = rand() < 0.15 ? 'cancelada-paciente' : (rand() < 0.1 ? 'no-show' : 'completada');
+    } else if(citaMin < nowMin - 10) {
+      status = rand() < 0.3 ? 'en-consulta' : (rand() < 0.15 ? 'completada' : 'espera');
+    } else if(citaMin < nowMin + 40) {
+      status = rand() < 0.4 ? 'espera' : (rand() < 0.35 ? 'confirmada' : 'programada');
+    } else {
+      status = rand() < 0.2 ? 'confirmada' : (rand() < 0.1 ? 'cancelada-paciente' : 'programada');
+    }
+
+    const pIdx = Math.floor(rand() * NOMBRES_PACIENTES.length);
+    const tipo = tipoCita[Math.floor(rand() * tipoCita.length)];
+    const conv = convenioOpts[Math.floor(rand() * 3)];
+    const motivo = tipo === 'consulta' ? pickMotivo(rand) : estudioNames[Math.floor(rand() * estudioNames.length)];
+    const edad = 18 + Math.floor(rand() * 62);
+
+    citas.push({
+      id: id++,
+      folio: "CM-" + todayY + "-" + (1200 + id * 7 + Math.floor(rand() * 50)),
+      fecha: new Date(todayY, todayM, todayD),
+      hora: hora,
+      horaMin: citaMin,
+      paciente: NOMBRES_PACIENTES[pIdx],
+      edad: edad,
+      tipo: tipo,
+      motivo: motivo,
+      convenio: conv,
+      status: status,
+      esHoy: true,
+      notas: rand() < 0.3 ? randomNota(rand) : null,
+      duracion: tipo === 'estudio' ? 20 : 30,
+      telefono: "81-" + (1000 + Math.floor(rand()*8999)) + "-" + (1000 + Math.floor(rand()*8999))
+    });
+  }
+
+  /* --- CITAS PRÓXIMOS 7 DÍAS --- */
+  for(let offset = 1; offset <= 7; offset++){
+    const d = new Date(todayY, todayM, todayD + offset);
+    const esFinde = d.getDay() === 0 || d.getDay() === 6;
+    if(esFinde && rand() > 0.2) continue;
+    const nCitas = esFinde ? (1 + Math.floor(rand() * 2)) : (3 + Math.floor(rand() * 5));
+    const usedHoras = new Set();
+    for(let i = 0; i < nCitas; i++){
+      let hora;
+      let tries = 0;
+      do { hora = horariosTodos[Math.floor(rand() * horariosTodos.length)]; tries++; } while(usedHoras.has(hora) && tries < 30);
+      usedHoras.add(hora);
+      const [h2] = hora.split(':').map(Number);
+      const pIdx = Math.floor(rand() * NOMBRES_PACIENTES.length);
+      const tipo = tipoCita[Math.floor(rand() * tipoCita.length)];
+      const conv = convenioOpts[Math.floor(rand() * 3)];
+      const s = rand() < 0.12 ? 'cancelada-paciente' : (rand() < 0.3 ? 'confirmada' : 'programada');
+      citas.push({
+        id: id++,
+        folio: "CM-" + todayY + "-" + (2000 + id * 5 + Math.floor(rand() * 30)),
+        fecha: d,
+        hora: hora,
+        horaMin: h2 * 60 + (hora.includes(':30') ? 30 : 0),
+        paciente: NOMBRES_PACIENTES[pIdx],
+        edad: 18 + Math.floor(rand() * 62),
+        tipo: tipo,
+        motivo: tipo === 'consulta' ? pickMotivo(rand) : estudioNames[Math.floor(rand() * estudioNames.length)],
+        convenio: conv,
+        status: s,
+        esHoy: false,
+        notas: null,
+        duracion: tipo === 'estudio' ? 20 : 30,
+        telefono: "81-" + (1000 + Math.floor(rand()*8999)) + "-" + (1000 + Math.floor(rand()*8999))
+      });
+    }
+  }
+
+  /* --- HISTORIAL (últimos 30 días) --- */
+  for(let offset = -30; offset <= -1; offset++){
+    if(rand() < 0.35) continue;
+    const d = new Date(todayY, todayM, todayD + offset);
+    const esFinde = d.getDay() === 0 || d.getDay() === 6;
+    if(esFinde && rand() > 0.15) continue;
+    const nC = 2 + Math.floor(rand() * 4);
+    const usedH = new Set();
+    for(let i = 0; i < nC; i++){
+      let hora;
+      let tries = 0;
+      do { hora = horariosTodos[Math.floor(rand() * horariosTodos.length)]; tries++; } while(usedH.has(hora) && tries < 30);
+      usedH.add(hora);
+      const tipo = tipoCita[Math.floor(rand() * tipoCita.length)];
+      const s2 = rand() < 0.08 ? 'cancelada-paciente' : (rand() < 0.04 ? 'no-show' : 'completada');
+      const pIdx = Math.floor(rand() * NOMBRES_PACIENTES.length);
+      citas.push({
+        id: id++,
+        folio: "CM-" + todayY + "-" + (100 + id * 3),
+        fecha: d,
+        hora: hora,
+        horaMin: 0,
+        paciente: NOMBRES_PACIENTES[pIdx],
+        edad: 18 + Math.floor(rand() * 62),
+        tipo: tipo,
+        motivo: tipo === 'consulta' ? pickMotivo(rand) : estudioNames[Math.floor(rand() * estudioNames.length)],
+        convenio: ['particular','seguro','empresa'][Math.floor(rand()*3)],
+        status: s2,
+        esHoy: false,
+        notas: null,
+        duracion: 30,
+        telefono: "81-0000-0000"
+      });
+    }
+  }
+
+  citas.sort((a, b) => a.fecha - b.fecha || a.horaMin - b.horaMin);
+  return citas;
+}
+
+function pickMotivo(rand){
+  const motivos = ["Control de diabetes","Revisión general","Dolor en el pecho","Seguimiento post-operatorio",
+    "Revisión pediátrica","Control de hipertensión","Dolor articular","Consulta de rutina",
+    "Evaluación de tiroides","Miopía / revisión oftalmológica","Orientación sobre síntomas","Chequeo preventivo"];
+  return motivos[Math.floor(rand() * motivos.length)];
+}
+
+function randomNota(rand){
+  const notas = ["Paciente con alergia a penicilina","Viene con familiar","Requiere silla de ruedas","Paciente nervioso, primera visita","Control post-quirúrgico"];
+  return notas[Math.floor(rand() * notas.length)];
+}
+
+/* ======================================================
+   SINCRONIZACIÓN CON PORTAL DEL PACIENTE (localStorage)
+   ====================================================== */
+function leerCitasReales(doctorId){
+  try {
+    const stored = JSON.parse(localStorage.getItem('cm_citas_agendadas') || '[]');
+    return stored
+      .filter(c => c.doctorId === doctorId)
+      .map(c => {
+        const fecha = c.fechaISO ? new Date(c.fechaISO + 'T12:00:00') : new Date();
+        return Object.assign({}, c, { fecha: fecha, esHoy: isToday(fecha) });
+      });
+  } catch(e) { return []; }
+}
+
+function mergeCitasReales(citasReales){
+  if(!citasReales.length) return;
+  citasReales.forEach(cr => {
+    /* Si ya existe esta cita real (mismo id), actualizar status sin agregar duplicado */
+    const existing = citasData.find(c => c.id === cr.id);
+    if(existing){ Object.assign(existing, cr); return; }
+    /* Quitar un mock del mismo slot de hoy para no saturar */
+    const idxMock = citasData.findIndex(c => !c.esReal && isToday(c.fecha) && c.hora === cr.hora);
+    if(idxMock !== -1) citasData.splice(idxMock, 1);
+    citasData.push(cr);
+  });
+  citasData.sort((a, b) => a.fecha - b.fecha || a.horaMin - b.horaMin);
+}
+
+function actualizarStatusEnLS(id, status){
+  try {
+    const stored = JSON.parse(localStorage.getItem('cm_citas_agendadas') || '[]');
+    const idx = stored.findIndex(c => c.id === id);
+    if(idx !== -1){ stored[idx].status = status; localStorage.setItem('cm_citas_agendadas', JSON.stringify(stored)); }
+  } catch(e) {}
+}
+
+function sincronizarPortal(){
+  if(!currentDoctorId) return;
+  const citasReales = leerCitasReales(currentDoctorId);
+  citasData = generarCitas(currentDoctorId);
+  mergeCitasReales(citasReales);
+  actualizarIndicadorPortal();
+  refreshAll();
+  showToast('<i class="fa-solid fa-rotate"></i> Panel sincronizado con el portal del paciente', 'success');
+}
+
+function actualizarIndicadorPortal(){
+  const el = document.getElementById('portalCounter');
+  if(!el || !currentDoctorId) return;
+  try {
+    const hoyISO = new Date().toISOString().split('T')[0];
+    const stored = JSON.parse(localStorage.getItem('cm_citas_agendadas') || '[]');
+    const n = stored.filter(c => c.doctorId === currentDoctorId && c.fechaISO === hoyISO).length;
+    el.textContent = n + ' nueva' + (n !== 1 ? 's' : '') + ' del portal';
+    el.style.display = n > 0 ? 'inline-flex' : 'none';
+  } catch(e) { el.style.display = 'none'; }
+}
+
+/* ======================================================
+   UTILIDADES
+   ====================================================== */
+function initials(nombre){
+  const p = nombre.replace(/^(Dr\.|Dra\.)\s*/,'').split(' ').filter(Boolean);
+  return ((p[0]||'')[0] + (p[1]||'')[0]).toUpperCase();
+}
+
+function fmtFecha(d){
+  return d.getDate() + ' ' + MESES_FULL[d.getMonth()] + ' ' + d.getFullYear();
+}
+
+function fmtFechaCorta(d){
+  return d.getDate() + ' ' + MESES_CORTO[d.getMonth()];
+}
+
+function isToday(d){
+  const n = new Date();
+  return d.getFullYear()===n.getFullYear() && d.getMonth()===n.getMonth() && d.getDate()===n.getDate();
+}
+
+function statusBadge(status){
+  const map = {
+    programada:'<span class="badge badge-programada"><i class="fa-solid fa-clock"></i> Programada</span>',
+    confirmada:'<span class="badge badge-confirmada"><i class="fa-solid fa-circle-check"></i> Confirmada</span>',
+    espera:'<span class="badge badge-espera"><i class="fa-solid fa-chair"></i> En sala</span>',
+    'en-consulta':'<span class="badge badge-en-consulta"><i class="fa-solid fa-stethoscope"></i> En consulta</span>',
+    completada:'<span class="badge badge-completada"><i class="fa-solid fa-check-double"></i> Completada</span>',
+    'cancelada-paciente':'<span class="badge badge-cancelada"><i class="fa-solid fa-xmark"></i> Cancelada · cupo libre</span>',
+    'cancelada-medico':'<span class="badge badge-cancelada"><i class="fa-solid fa-xmark"></i> Cancelada</span>',
+    'no-show':'<span class="badge badge-no-show"><i class="fa-solid fa-user-slash"></i> No se presentó</span>'
+  };
+  return map[status] || '';
+}
+
+function showToast(msg, type=''){
+  const t = document.getElementById('toast');
+  t.className = 'toast ' + (type ? 'toast-' + type : '');
+  t.innerHTML = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+/* ======================================================
+   NAVEGACIÓN
+   ====================================================== */
+const NAV_IDS = ['v-dashboard','v-agenda','v-semana','v-espera','v-proximas','v-historial'];
+const NAV_BTN  = ['nav-dashboard','nav-agenda','nav-semana','nav-espera','nav-proximas','nav-historial'];
+
+function showView(id){
+  if(!currentDoctorId) return;
+  document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const btnId = 'nav-' + id.replace('v-','');
+  const btn = document.getElementById(btnId);
+  if(btn) btn.classList.add('active');
+  selectedView = id;
+  if(id === 'v-agenda') renderAgendaFull();
+  if(id === 'v-semana') renderSemana();
+  if(id === 'v-espera') renderEspera();
+  if(id === 'v-proximas') renderProximas();
+  if(id === 'v-historial') renderHistorial();
+}
+
+/* ======================================================
+   CLOCK
+   ====================================================== */
+function updateClock(){
+  const n = new Date();
+  const h = String(n.getHours()).padStart(2,'0');
+  const m = String(n.getMinutes()).padStart(2,'0');
+  document.getElementById('reloj').textContent = h + ':' + m;
+}
+
+/* ======================================================
+   CAMBIAR DOCTOR
+   ====================================================== */
+function cambiarDoctor(){
+  const sel = document.getElementById('doctorSelect');
+  const val = sel.value;
+  if(!val){
+    currentDoctorId = null;
+    document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+    document.getElementById('v-nodoc').classList.add('active');
+    return;
+  }
+  currentDoctorId = parseInt(val);
+  citasData = generarCitas(currentDoctorId);
+  const citasReales = leerCitasReales(currentDoctorId);
+  mergeCitasReales(citasReales);
+  actualizarIndicadorPortal();
+  remindersFired = {};
+  const doc = DOCTORS.find(d => d.id === currentDoctorId);
+
+  /* actualizar header/dashboard labels */
+  document.getElementById('dashTitle').textContent = doc.nombre;
+  document.getElementById('dashSubtitle').textContent = doc.especialidad + ' · ' + doc.sede;
+  const n = new Date();
+  document.getElementById('dashFecha').textContent = DIAS_SEMANA[n.getDay()] + ', ' + fmtFecha(n);
+  document.getElementById('agendaFechaLabel').textContent = DIAS_SEMANA[n.getDay()] + ', ' + fmtFecha(n);
+
+  refreshAll();
+  showView('v-dashboard');
+}
+
+/* ======================================================
+   REFRESH COMPLETO
+   ====================================================== */
+function refreshAll(){
+  updateStats();
+  renderDashNext();
+  renderDashAgenda();
+  renderDashCancelaciones();
+  updateBadges();
+  if(selectedView === 'v-agenda') renderAgendaFull();
+  if(selectedView === 'v-semana') renderSemana();
+  if(selectedView === 'v-espera') renderEspera();
+  if(selectedView === 'v-proximas') renderProximas();
+  if(selectedView === 'v-historial') renderHistorial();
+}
+
+/* ======================================================
+   ESTADÍSTICAS
+   ====================================================== */
+function updateStats(){
+  const hoy = citasData.filter(c => isToday(c.fecha));
+  const enEspera = hoy.filter(c => c.status === 'espera').length;
+  const comp = hoy.filter(c => c.status === 'completada').length;
+  const cancel = hoy.filter(c => c.status === 'cancelada-paciente' || c.status === 'cancelada-medico').length;
+  const pendientes = hoy.filter(c => c.status === 'programada' || c.status === 'confirmada').length;
+
+  document.getElementById('st-hoy').textContent = hoy.length;
+  document.getElementById('st-hoy-sub').textContent = pendientes + ' pendiente' + (pendientes !== 1 ? 's' : '');
+  document.getElementById('st-espera').textContent = enEspera;
+  document.getElementById('st-comp').textContent = comp;
+  document.getElementById('st-cancel').textContent = cancel;
+  document.getElementById('st-cancel-sub').textContent = cancel + ' cupo' + (cancel !== 1 ? 's' : '') + ' liberado' + (cancel !== 1 ? 's' : '');
+}
+
+function updateBadges(){
+  const hoy = citasData.filter(c => isToday(c.fecha));
+  const pendientes = hoy.filter(c => ['programada','confirmada','espera','en-consulta'].includes(c.status)).length;
+  const enEspera = hoy.filter(c => c.status === 'espera').length;
+  const ba = document.getElementById('nav-badge-agenda');
+  const be = document.getElementById('nav-badge-espera');
+  ba.textContent = pendientes;
+  ba.classList.toggle('hidden', pendientes === 0);
+  be.textContent = enEspera;
+  be.classList.toggle('hidden', enEspera === 0);
+}
+
+/* ======================================================
+   DASHBOARD – PRÓXIMA CITA
+   ====================================================== */
+function renderDashNext(){
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const proxima = citasData
+    .filter(c => isToday(c.fecha) && c.horaMin >= nowMin && ['programada','confirmada','espera'].includes(c.status))
+    .sort((a,b) => a.horaMin - b.horaMin)[0];
+
+  const el = document.getElementById('dashNextAppt');
+  if(!proxima){ el.innerHTML = '<div class="empty" style="padding:20px;"><i class="fa-solid fa-calendar-check"></i><p>Sin citas pendientes por ahora.</p></div>'; return; }
+
+  const diffMin = proxima.horaMin - nowMin;
+  const urgent = diffMin <= 15;
+  const warn = diffMin <= 30;
+
+  el.innerHTML = `<div class="cita-row" style="border-color:${urgent ? 'var(--cm-error)' : (warn ? '#9c6b00' : 'var(--cm-purple)')};box-shadow:0 0 0 2px ${urgent ? 'rgba(192,57,43,.15)' : 'rgba(107,45,139,.1)'};" onclick="openCitaModal(${proxima.id})">
+    <div class="cita-fecha">
+      <span class="dia">${String(proxima.hora).padStart(5,'0')}</span>
+      <span class="mes">HOY</span>
+    </div>
+    <div class="cita-info">
+      <h4>${proxima.paciente}</h4>
+      <p>${proxima.tipo === 'estudio' ? '<i class="fa-solid fa-flask"></i> ' : '<i class="fa-solid fa-stethoscope"></i> '} ${proxima.motivo} &mdash; ${CONVENIOS_LABEL[proxima.convenio] || proxima.convenio}</p>
+      <div class="appt-badges" style="margin-top:6px;">${statusBadge(proxima.status)}</div>
+    </div>
+    <span class="cita-countdown ${urgent ? 'rojo' : ''}">
+      <i class="fa-solid fa-clock"></i> ${diffMin <= 0 ? 'Ahora' : 'En ' + diffMin + ' min'}
+    </span>
+    <div class="cita-actions">
+      ${proxima.status === 'confirmada' ? `<button class="btn btn-warning btn-sm" onclick="event.stopPropagation();cambiarStatus(${proxima.id},'espera')"><i class="fa-solid fa-chair"></i> Check-in</button>` : ''}
+      ${proxima.status === 'espera' ? `<button class="btn btn-primary btn-sm" onclick="event.stopPropagation();cambiarStatus(${proxima.id},'en-consulta')"><i class="fa-solid fa-stethoscope"></i> Iniciar</button>` : ''}
+    </div>
+  </div>`;
+}
+
+function renderDashCancelaciones(){
+  const canceladas = citasData.filter(c => isToday(c.fecha) && c.status === 'cancelada-paciente');
+  const el = document.getElementById('dashCancelaciones');
+  if(!canceladas.length){ el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="reminder-banner" style="background:linear-gradient(90deg,#5a1a1a,#8b2020);margin-bottom:14px;">
+    <i class="fa-solid fa-calendar-xmark"></i>
+    <div><strong>${canceladas.length} cancelación${canceladas.length>1?'es':''} por parte del paciente hoy</strong> &mdash;
+    ${canceladas.map(c => c.hora + ' — ' + c.paciente).join(' · ')} &mdash; cupos liberados y disponibles para reagendar.</div>
+  </div>`;
+}
+
+/* ======================================================
+   DASHBOARD AGENDA (preview primeras 5)
+   ====================================================== */
+function renderDashAgenda(){
+  const hoy = citasData.filter(c => isToday(c.fecha)).sort((a,b) => a.horaMin - b.horaMin);
+  const el = document.getElementById('dashAgenda');
+  if(!hoy.length){ el.innerHTML = '<div class="empty"><i class="fa-solid fa-calendar"></i><p>Sin citas registradas para hoy.</p></div>'; return; }
+  el.innerHTML = hoy.slice(0,5).map(c => citaSlotHTML(c)).join('');
+}
+
+/* ======================================================
+   AGENDA COMPLETA DEL DÍA
+   ====================================================== */
+function renderAgendaFull(){
+  const hoy = citasData.filter(c => isToday(c.fecha)).sort((a,b) => a.horaMin - b.horaMin);
+  const el = document.getElementById('agendaFull');
+  if(!hoy.length){ el.innerHTML = '<div class="empty"><i class="fa-solid fa-calendar"></i><p>Sin citas para hoy.</p></div>'; return; }
+  el.innerHTML = hoy.map(c => citaSlotHTML(c, true)).join('');
+  checkReminders();
+}
+
+function citaSlotHTML(c, full=false){
+  const esCancelada = c.status === 'cancelada-paciente' || c.status === 'cancelada-medico';
+  const esLibre = esCancelada;
+  let actions = '';
+  if(full){
+    if(c.status === 'programada') actions = `<button class="btn btn-success btn-sm" onclick="cambiarStatus(${c.id},'confirmada')"><i class="fa-solid fa-circle-check"></i> Confirmar</button>`;
+    if(c.status === 'confirmada') actions = `<button class="btn btn-warning btn-sm" onclick="cambiarStatus(${c.id},'espera')"><i class="fa-solid fa-chair"></i> Check-in</button>`;
+    if(c.status === 'espera') actions = `<button class="btn btn-primary btn-sm" onclick="cambiarStatus(${c.id},'en-consulta')"><i class="fa-solid fa-stethoscope"></i> Iniciar</button>`;
+    if(c.status === 'en-consulta') actions = `<button class="btn btn-success btn-sm" onclick="cambiarStatus(${c.id},'completada')"><i class="fa-solid fa-check-double"></i> Completar</button>`;
+    if(['programada','confirmada'].includes(c.status)) actions += ` <button class="btn btn-danger btn-sm" onclick="cancelarCita(${c.id},'medico')"><i class="fa-solid fa-xmark"></i> Cancelar</button>`;
+  }
+
+  return `<div class="time-slot-row ${esLibre ? 'slot-libre' : ''}" onclick="openCitaModal(${c.id})">
+    <div class="slot-time">${c.hora}<span>${c.duracion} min</span></div>
+    <div class="slot-content">
+      ${esLibre ? `
+        <div>
+          <div class="slot-libre-label"><i class="fa-solid fa-lock-open"></i> Cupo liberado</div>
+          <div style="font-size:12px;color:var(--cm-muted);margin-top:2px;">Cancelado por: ${c.paciente} &mdash; disponible para reagendar</div>
+        </div>
+        <span class="slot-libre-badge liberado">Cupo libre</span>
+      ` : `
+        <div style="flex:1;min-width:0;">
+          <div class="patient-name">${c.paciente} <span style="font-weight:400;font-size:12px;color:var(--cm-muted);">${c.edad} años</span></div>
+          <div class="patient-meta">${c.tipo === 'estudio' ? '<i class="fa-solid fa-flask"></i>' : '<i class="fa-solid fa-stethoscope"></i>'} ${c.motivo}</div>
+          <div class="appt-badges">${statusBadge(c.status)} <span class="badge badge-tipo">${CONVENIOS_LABEL[c.convenio]||c.convenio}</span>${c.esReal ? '<span class="badge" style="background:#EDE4F3;color:#4A1E61;border:1px solid #9B5DC0;font-size:10px;"><i class="fa-solid fa-mobile-screen"></i> Portal</span>' : ''}${c.notas ? '<span class="badge" style="background:#FFF3CD;color:#856404;"><i class="fa-solid fa-note-sticky"></i> Nota</span>' : ''}</div>
+        </div>
+      `}
+      <div class="slot-actions" onclick="event.stopPropagation();">${actions}</div>
+    </div>
+  </div>`;
+}
+
+/* ======================================================
+   CAMBIAR STATUS DE CITA
+   ====================================================== */
+function cambiarStatus(id, newStatus){
+  const c = citasData.find(x => x.id === id);
+  if(!c) return;
+  c.status = newStatus;
+  if(c.esReal) actualizarStatusEnLS(id, newStatus);
+  const msgs = {
+    confirmada: '<i class="fa-solid fa-circle-check"></i> Cita confirmada — ' + c.paciente,
+    espera: '<i class="fa-solid fa-chair"></i> Check-in realizado — ' + c.paciente + ' está en sala',
+    'en-consulta': '<i class="fa-solid fa-stethoscope"></i> Consulta iniciada con ' + c.paciente,
+    completada: '<i class="fa-solid fa-check-double"></i> Consulta completada — ' + c.paciente
+  };
+  showToast(msgs[newStatus] || 'Estado actualizado', newStatus === 'completada' ? 'success' : '');
+  closeModal();
+  refreshAll();
+}
+
+function cancelarCita(id, quien){
+  const c = citasData.find(x => x.id === id);
+  if(!c) return;
+  c.status = quien === 'paciente' ? 'cancelada-paciente' : 'cancelada-medico';
+  if(c.esReal) actualizarStatusEnLS(id, c.status);
+  showToast('<i class="fa-solid fa-calendar-xmark"></i> Cita cancelada — cupo liberado para ' + c.hora, 'error');
+  closeModal();
+  refreshAll();
+}
+
+/* ======================================================
+   MODAL DETALLE CITA
+   ====================================================== */
+function openCitaModal(id){
+  const c = citasData.find(x => x.id === id);
+  if(!c) return;
+  document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-calendar-check"></i> Cita ' + c.folio;
+  let actions = '';
+  if(c.status === 'programada') actions += `<button class="btn btn-success" onclick="cambiarStatus(${c.id},'confirmada')"><i class="fa-solid fa-circle-check"></i> Confirmar asistencia</button>`;
+  if(c.status === 'confirmada') actions += `<button class="btn btn-warning" onclick="cambiarStatus(${c.id},'espera')"><i class="fa-solid fa-chair"></i> Check-in</button>`;
+  if(c.status === 'espera') actions += `<button class="btn btn-primary" onclick="cambiarStatus(${c.id},'en-consulta')"><i class="fa-solid fa-stethoscope"></i> Iniciar consulta</button>`;
+  if(c.status === 'en-consulta') actions += `<button class="btn btn-success" onclick="cambiarStatus(${c.id},'completada')"><i class="fa-solid fa-check-double"></i> Marcar completada</button>`;
+  if(['programada','confirmada','espera'].includes(c.status)){
+    actions += `<button class="btn btn-danger" onclick="cancelarCita(${c.id},'medico')"><i class="fa-solid fa-xmark"></i> Cancelar</button>`;
+  }
+  actions += `<button class="btn btn-ghost" onclick="closeModal()">Cerrar</button>`;
+
+  document.getElementById('modalBody').innerHTML = `
+    <div class="info-row">
+      <div class="info-box"><label>Paciente</label><p>${c.paciente}</p></div>
+      <div class="info-box"><label>Edad</label><p>${c.edad} años</p></div>
+    </div>
+    <div class="info-row">
+      <div class="info-box"><label>Fecha</label><p>${fmtFecha(c.fecha)}</p></div>
+      <div class="info-box"><label>Hora</label><p>${c.hora} &mdash; ${c.duracion} min</p></div>
+    </div>
+    <div class="info-row">
+      <div class="info-box"><label>Tipo</label><p>${c.tipo === 'estudio' ? '<i class="fa-solid fa-flask"></i> Estudio' : '<i class="fa-solid fa-stethoscope"></i> Consulta'}</p></div>
+      <div class="info-box"><label>Motivo / Estudio</label><p>${c.motivo}</p></div>
+    </div>
+    <div class="info-row">
+      <div class="info-box"><label>Convenio</label><p>${CONVENIOS_LABEL[c.convenio] || c.convenio}</p></div>
+      <div class="info-box"><label>Teléfono</label><p>${c.telefono}</p></div>
+    </div>
+    ${c.notas ? `<div class="info-box" style="margin-bottom:12px;background:var(--cm-warning-bg);"><label>Nota clínica</label><p>${c.notas}</p></div>` : ''}
+    <div>${statusBadge(c.status)}</div>
+  `;
+  document.getElementById('modalActions').innerHTML = actions;
+  document.getElementById('modalOverlay').classList.remove('hidden');
+}
+
+function closeModal(){
+  document.getElementById('modalOverlay').classList.add('hidden');
+}
+document.getElementById('modalOverlay').addEventListener('click', function(e){ if(e.target === this) closeModal(); });
+
+/* ======================================================
+   VISTA SEMANAL
+   ====================================================== */
+function renderSemana(){
+  const now = new Date();
+  const dow = now.getDay();
+  /* semana lunes-sábado */
+  const lunes = new Date(now);
+  lunes.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1));
+
+  const dias = [];
+  for(let i = 0; i < 6; i++){
+    const d = new Date(lunes);
+    d.setDate(lunes.getDate() + i);
+    dias.push(d);
+  }
+
+  const horas = ["08:00","09:00","10:00","11:00","12:00","13:00","14:00","16:00","17:00","18:00"];
+
+  let headerHTML = '<div class="week-header-cell" style="background:var(--cm-purple-dark);">Hora</div>';
+  dias.forEach(d => {
+    const hoy = isToday(d);
+    headerHTML += `<div class="week-header-cell ${hoy ? 'hoy' : ''}">${DIAS_SEMANA[d.getDay()].slice(0,3)}<br><strong>${d.getDate()} ${MESES_CORTO[d.getMonth()]}</strong></div>`;
+  });
+  document.getElementById('weekHeader').innerHTML = headerHTML;
+
+  let bodyHTML = '';
+  horas.forEach(hora => {
+    bodyHTML += `<div class="week-time">${hora}</div>`;
+    dias.forEach(d => {
+      const hoy = isToday(d);
+      const citasSlot = citasData.filter(c =>
+        c.fecha.getFullYear() === d.getFullYear() &&
+        c.fecha.getMonth() === d.getMonth() &&
+        c.fecha.getDate() === d.getDate() &&
+        c.hora.startsWith(hora.split(':')[0])
+      );
+      let content = citasSlot.map(c => {
+        const cls = c.status === 'completada' ? 'completada-bg' : (c.status.includes('cancel') ? 'cancelada-bg' : (c.tipo === 'estudio' ? 'est' : ''));
+        return `<div class="week-appt ${cls}" title="${c.paciente} — ${c.hora} — ${c.motivo}" onclick="openCitaModal(${c.id})">${c.hora} ${c.paciente.split(' ')[0]}</div>`;
+      }).join('');
+      bodyHTML += `<div class="week-cell ${hoy ? 'hoy' : ''}">${content}</div>`;
+    });
+  });
+  document.getElementById('weekBody').innerHTML = bodyHTML;
+}
+
+/* ======================================================
+   SALA DE ESPERA
+   ====================================================== */
+function renderEspera(){
+  const enConsulta = citasData.filter(c => isToday(c.fecha) && c.status === 'en-consulta');
+  const enEspera = citasData.filter(c => isToday(c.fecha) && c.status === 'espera').sort((a,b) => a.horaMin - b.horaMin);
+
+  const ecEl = document.getElementById('enConsultaArea');
+  if(enConsulta.length){
+    ecEl.innerHTML = `<div class="section-header" style="margin-bottom:10px;"><div class="section-title"><i class="fa-solid fa-stethoscope"></i> En consulta ahora</div></div>` +
+      enConsulta.map(c => `<div class="espera-card en-consulta-card">
+        <div class="espera-card-top">
+          <div class="espera-avatar" style="background:var(--cm-purple);color:#fff;">${initials(c.paciente)}</div>
+          <div class="espera-info"><h4>${c.paciente}</h4><p>${c.hora} &mdash; ${c.motivo}</p></div>
+        </div>
+        <div class="espera-card-actions">
+          <button class="btn btn-success btn-sm" onclick="cambiarStatus(${c.id},'completada')"><i class="fa-solid fa-check-double"></i> Completar consulta</button>
+        </div>
+      </div>`).join('');
+  } else { ecEl.innerHTML = ''; }
+
+  const grid = document.getElementById('esperaGrid');
+  const emptyEl = document.getElementById('esperaEmpty');
+
+  if(!enEspera.length){
+    grid.innerHTML = '';
+    emptyEl.classList.remove('hidden');
+    return;
+  }
+  emptyEl.classList.add('hidden');
+
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+
+  grid.innerHTML = enEspera.map(c => {
+    const espMinutos = Math.max(0, nowMin - c.horaMin);
+    const urgente = espMinutos > 20;
+    return `<div class="espera-card ${urgente ? 'urgente' : ''}">
+      <div class="espera-card-top">
+        <div class="espera-avatar ${urgente ? '' : 'verde'}">${initials(c.paciente)}</div>
+        <div class="espera-info">
+          <h4>${c.paciente} <span style="font-size:12px;font-weight:400;color:var(--cm-muted);">${c.edad} años</span></h4>
+          <p>${c.hora} &mdash; ${c.motivo}</p>
+          <p class="espera-wait">${urgente ? '<i class="fa-solid fa-triangle-exclamation"></i> ' : ''} Espera: ${espMinutos} min</p>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--cm-muted);">${CONVENIOS_LABEL[c.convenio]||c.convenio}</div>
+      <div class="espera-card-actions">
+        <button class="btn btn-primary btn-sm" onclick="cambiarStatus(${c.id},'en-consulta')"><i class="fa-solid fa-stethoscope"></i> Iniciar consulta</button>
+        <button class="btn btn-ghost btn-sm" onclick="openCitaModal(${c.id})"><i class="fa-solid fa-eye"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ======================================================
+   PRÓXIMAS CITAS (con countdown)
+   ====================================================== */
+function renderProximas(){
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+
+  /* Hoy: citas pendientes desde ahora */
+  const proxHoy = citasData.filter(c =>
+    isToday(c.fecha) &&
+    c.horaMin > nowMin - 10 &&
+    ['programada','confirmada','espera'].includes(c.status)
+  ).sort((a,b) => a.horaMin - b.horaMin);
+
+  /* Próximos 7 días */
+  const proxFuturas = citasData.filter(c =>
+    !isToday(c.fecha) &&
+    c.fecha > now &&
+    ['programada','confirmada'].includes(c.status)
+  ).sort((a,b) => a.fecha - b.fecha || a.horaMin - b.horaMin).slice(0, 15);
+
+  const el = document.getElementById('proximasList');
+  const emEl = document.getElementById('proximasEmpty');
+
+  const todas = [...proxHoy, ...proxFuturas];
+  if(!todas.length){ el.innerHTML = ''; emEl.classList.remove('hidden'); return; }
+  emEl.classList.add('hidden');
+
+  el.innerHTML = todas.map(c => {
+    let countdownHTML = '';
+    if(isToday(c.fecha)){
+      const diffMin = c.horaMin - nowMin;
+      const urgente = diffMin <= 15;
+      const warn = diffMin <= 30;
+      countdownHTML = `<span class="cita-countdown ${urgente ? 'rojo' : ''}"><i class="fa-solid fa-clock"></i> ${diffMin <= 0 ? 'Ahora' : 'En ' + diffMin + ' min'}</span>`;
+    }
+    const esFuturo = !isToday(c.fecha);
+    return `<div class="cita-row" onclick="openCitaModal(${c.id})">
+      <div class="cita-fecha">
+        <span class="dia">${c.fecha.getDate()}</span>
+        <span class="mes">${MESES_CORTO[c.fecha.getMonth()]}</span>
+        <span class="cita-hora">${c.hora}</span>
+      </div>
+      <div class="cita-info">
+        <h4>${c.paciente} <span style="font-size:12px;font-weight:400;color:var(--cm-muted);">${c.edad} años</span></h4>
+        <p>${c.tipo === 'estudio' ? '<i class="fa-solid fa-flask"></i>' : '<i class="fa-solid fa-stethoscope"></i>'} ${c.motivo} &mdash; ${CONVENIOS_LABEL[c.convenio]||c.convenio}</p>
+        <div class="appt-badges" style="margin-top:4px;">${statusBadge(c.status)}</div>
+      </div>
+      ${countdownHTML}
+      <div class="cita-actions" onclick="event.stopPropagation();">
+        ${c.status === 'programada' ? `<button class="btn btn-success btn-sm" onclick="cambiarStatus(${c.id},'confirmada')"><i class="fa-solid fa-circle-check"></i></button>` : ''}
+        <button class="btn btn-ghost btn-sm" onclick="openCitaModal(${c.id})"><i class="fa-solid fa-eye"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ======================================================
+   HISTORIAL
+   ====================================================== */
+function renderHistorial(){
+  const now = new Date();
+  const hist = citasData.filter(c => !isToday(c.fecha) && c.fecha < now)
+    .sort((a,b) => b.fecha - a.fecha || b.horaMin - a.horaMin);
+
+  const el = document.getElementById('historialList');
+  if(!hist.length){ el.innerHTML = '<div class="empty"><i class="fa-solid fa-file-medical"></i><p>Sin atenciones registradas.</p></div>'; return; }
+
+  el.innerHTML = hist.map(c => `<div class="hist-row" onclick="openCitaModal(${c.id})" style="cursor:pointer;">
+    <div class="hist-icon">${c.tipo === 'estudio' ? '<i class="fa-solid fa-flask"></i>' : '<i class="fa-solid fa-stethoscope"></i>'}</div>
+    <div class="hist-info">
+      <h4>${c.paciente} <span style="font-weight:400;font-size:12px;color:var(--cm-muted);">&mdash; ${c.motivo}</span></h4>
+      <p>${fmtFechaCorta(c.fecha)} &mdash; ${c.hora} &mdash; ${CONVENIOS_LABEL[c.convenio]||c.convenio}</p>
+    </div>
+    <span class="folio-tag">${c.folio}</span>
+    ${statusBadge(c.status)}
+  </div>`).join('');
+}
+
+/* ======================================================
+   RECORDATORIOS AUTOMÁTICOS
+   ====================================================== */
+function checkReminders(){
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const pendientes = citasData.filter(c =>
+    isToday(c.fecha) &&
+    ['programada','confirmada','espera'].includes(c.status)
+  );
+
+  let urgente = null;
+  for(const c of pendientes){
+    const diff = c.horaMin - nowMin;
+    if(diff >= 0 && diff <= 30){
+      const key = c.id + '-' + (diff <= 15 ? '15' : '30');
+      if(!remindersFired[key]){
+        remindersFired[key] = true;
+        const msg = diff <= 15
+          ? `<strong>¡${c.paciente} en ${diff} min!</strong> ${c.hora} &mdash; ${c.motivo}. Prepara el consultorio.`
+          : `Próxima cita en 30 min: <strong>${c.paciente}</strong> &mdash; ${c.hora} &mdash; ${c.motivo}`;
+        if(!urgente || diff < urgente.diff) urgente = { msg, diff, c };
+      }
+    }
+  }
+
+  const bTop = document.getElementById('reminderBannerTop');
+  const bTxt = document.getElementById('reminderBannerText');
+  const bAg = document.getElementById('reminderBanner');
+  const bAgTxt = document.getElementById('reminderText');
+
+  if(urgente){
+    bTop.classList.remove('hidden');
+    bTxt.innerHTML = urgente.msg;
+    if(bAg){
+      bAg.classList.remove('hidden');
+      bAgTxt.innerHTML = urgente.msg;
+    }
+    if(urgente.diff <= 15){
+      showToast('<i class="fa-solid fa-bell"></i> ' + urgente.msg, 'warning');
+    }
+  } else {
+    bTop.classList.add('hidden');
+    if(bAg) bAg.classList.add('hidden');
+  }
+}
+
+/* ======================================================
+   INICIALIZACIÓN
+   ====================================================== */
+function init(){
+  /* Poblar selector de doctores */
+  const sel = document.getElementById('doctorSelect');
+  DOCTORS.forEach(d => {
+    const opt = document.createElement('option');
+    opt.value = d.id;
+    opt.textContent = d.nombre + ' — ' + d.especialidad.split(' ')[0];
+    sel.appendChild(opt);
+  });
+
+  updateClock();
+  setInterval(updateClock, 30000);
+
+  /* Refrescar citas y recordatorios cada minuto */
+  setInterval(() => {
+    if(currentDoctorId){
+      renderDashNext();
+      renderDashCancelaciones();
+      updateStats();
+      updateBadges();
+      checkReminders();
+      if(selectedView === 'v-proximas') renderProximas();
+      if(selectedView === 'v-espera') renderEspera();
+    }
+  }, 60000);
+
+  /* Escuchar cambios en localStorage desde el portal del paciente (pestaña/ventana distinta) */
+  window.addEventListener('storage', function(e){
+    if(e.key === 'cm_citas_agendadas' && currentDoctorId){
+      const citasReales = leerCitasReales(currentDoctorId);
+      citasData = generarCitas(currentDoctorId);
+      mergeCitasReales(citasReales);
+      actualizarIndicadorPortal();
+      refreshAll();
+      showToast('<i class="fa-solid fa-mobile-screen"></i> Nueva cita recibida desde el portal del paciente', 'success');
+    }
+  });
+}
+
+init();
+</script>
+</body>
+</html>
